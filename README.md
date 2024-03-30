@@ -29,9 +29,20 @@
 ...
 
 ### Commands and steps
-- Clone the repository: `git clone ...`
-- Change directory: `cd roominghouseapp_be`
+- Clone the repository: `git clone https://github.com/Huy1112002/Hospital-Management`
+- Change directory: `cd Hospital-Management`
 - Install dependencies: `npm install`
-- Create a .env file and fill
+- Create a .env file and fill like 
+**.env.development**
+```
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_NAME=HOSPITAL
+DB_USER=HOSPITAL_ADMIN
+DB_PASSWORD=HOSPITAL
+
+NODE_ENV=127.0.0.1
+PORT=3000
+```
 - Run migration: `npm run migration:run`
 - Start the project: `npm run start:dev`

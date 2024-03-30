@@ -13,7 +13,7 @@ export class UsersController {
     constructor(private readonly usersService: UsersService) { }
 
     @UserRoles(Role.Admin)
-    @HttpCode(HttpStatus.OK)
+    @HttpCode(HttpStatus.CREATED)
     @Post()
     create(@Body() createUserDto: CreateUserDto) {
       return this.usersService.create(createUserDto);
@@ -28,6 +28,7 @@ export class UsersController {
     }
 
     @Get('profile')
+    @HttpCode(HttpStatus.FOUND)
     getProfile(@GetCurrentUserId() id: string) {
       try {
         this.usersService.findOneById(id);
@@ -37,6 +38,7 @@ export class UsersController {
     }
 
     @Post('search')
+    @HttpCode(HttpStatus.FOUND)
     search(@Query('query') query: string) {
       var search = this.usersService.queryUser(query);
       return search;

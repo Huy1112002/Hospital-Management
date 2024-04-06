@@ -9,6 +9,7 @@ import { Role } from "src/common/enums/role.enum";
     DeleteDateColumn,
     UpdateDateColumn,
     TableInheritance,
+    OneToMany,
 } from 'typeorm';
   
 @Entity({ name: 'user' })

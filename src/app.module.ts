@@ -11,6 +11,7 @@ import { RolesGuard } from "./common/guards/role.guard"
 import { AppConfig, DatabaseConfig } from "./config"
 import { AuthModule } from "./auth/auth.module"
 import { UsersModule } from "./users/users.module"
+import { ExamninationsModule } from './examninations/examninations.module';
 
 @Module({
 	imports: [
@@ -29,6 +30,7 @@ import { UsersModule } from "./users/users.module"
 		}),
 		AuthModule,
 		UsersModule,
+		ExamninationsModule,
 	],
 	controllers: [AppController],
 	providers: [

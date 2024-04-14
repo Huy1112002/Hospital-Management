@@ -12,6 +12,7 @@ import { AppConfig, DatabaseConfig } from "./config"
 import { AuthModule } from "./auth/auth.module"
 import { UsersModule } from "./users/users.module"
 import { ExamninationsModule } from './examninations/examninations.module';
+import { MedicineModule } from './medicine/medicine.module';
 
 @Module({
 	imports: [
@@ -31,6 +32,7 @@ import { ExamninationsModule } from './examninations/examninations.module';
 		AuthModule,
 		UsersModule,
 		ExamninationsModule,
+		MedicineModule,
 	],
 	controllers: [AppController],
 	providers: [

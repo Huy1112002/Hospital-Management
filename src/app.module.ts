@@ -13,6 +13,7 @@ import { AuthModule } from "./auth/auth.module"
 import { UsersModule } from "./users/users.module"
 import { ExamninationsModule } from './examninations/examninations.module';
 import { MachinesModule } from './machines/machines.module';
+import { MedicineModule } from './medicine/medicine.module';
 
 @Module({
 	imports: [
@@ -33,6 +34,7 @@ import { MachinesModule } from './machines/machines.module';
 		UsersModule,
 		ExamninationsModule,
 		MachinesModule,
+		MedicineModule,
 	],
 	controllers: [AppController],
 	providers: [

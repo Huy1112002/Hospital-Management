@@ -6,12 +6,17 @@ import {
     PrimaryGeneratedColumn,
     CreateDateColumn,
     UpdateDateColumn,
+    OneToOne,
+    JoinColumn,
+    OneToMany,
 } from 'typeorm';
 
-@Entity({ name: 'batches' })
-export class Batch extends BaseEntity {
+import { BatchMedicine } from './batch_medicine.entity';
+
+@Entity({ name: 'batch_details' })
+export class BatchDetail extends BaseEntity {
     @PrimaryGeneratedColumn('uuid')
-    batch_id: string;
+    id: string;
 
     @Column()
     status: string;
@@ -32,11 +37,11 @@ export class Batch extends BaseEntity {
     @Column()
     total_type: number;
 
-    @Column({ type: 'json' })
-    medicines: object;
-
     @Column({ nullable: true })
     description: string;
+
+    @OneToMany(() => BatchMedicine, (batchMedicine) => batchMedicine.batchDetail)
+    batchMedicines: BatchMedicine[];
 
     @CreateDateColumn()
     createdAt: Date;

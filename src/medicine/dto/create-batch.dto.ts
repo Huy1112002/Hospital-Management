@@ -1,6 +1,24 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsArray, IsDate, Length, IsOptional } from 'class-validator';
 
+class Medicine {
+    @IsNotEmpty()
+    medicine_id: string;
+
+    @IsNotEmpty()
+    quantity: number;
+
+    @IsNotEmpty()
+    price: number;
+
+    // @IsNotEmpty()
+    // @IsDate()
+    // expiration_date: Date;
+
+    @IsNotEmpty()
+    vendor: string;
+}
+
 export class CreateBatchDto {
     @ApiProperty()
     @IsNotEmpty()
@@ -19,19 +37,18 @@ export class CreateBatchDto {
     @Length(10)
     placer_phone: string;
 
-    // @ApiProperty()
-    // @IsOptional()
-    // @IsDate()
-    // import_date: Date;
+    // FIX THIS, NOT OPTIONAL
+    @IsOptional()
+    @IsDate()
+    import_date: Date;
 
-    @ApiProperty()
-    @IsNotEmpty()
-    total_type: number;
+    @IsOptional()
+    total_type: number = 0;
 
     @ApiProperty({ isArray: true })
     @IsNotEmpty()
     @IsArray()
-    medicines: object;
+    medicines: Medicine[];
 
     @ApiProperty()
     @IsOptional()

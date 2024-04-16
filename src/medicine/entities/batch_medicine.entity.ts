@@ -22,6 +22,9 @@ export class BatchMedicine {
     @Column()
     vendor: string;
 
+    @Column()
+    batchDetail_id: string;
+
     @ManyToOne(() => BatchDetail, (batchDetail) => batchDetail.batchMedicines, { cascade: true })
     @JoinColumn({ name: 'batchDetail_id' })
     batchDetail: BatchDetail;

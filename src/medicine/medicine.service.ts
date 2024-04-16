@@ -12,8 +12,7 @@ import { CreateMedicineDto } from './dto/create-medicine.dto';
 export class MedicineService {
     constructor(
         @InjectRepository(BatchDetail) private batchDetailRepo: Repository<BatchDetail>,
-        @InjectRepository(BatchMedicine)
-        private batchMedicineRepo: Repository<BatchMedicine>,
+        @InjectRepository(BatchMedicine) private batchMedicineRepo: Repository<BatchMedicine>,
         @InjectRepository(Cabinet) private cabinetRepo: Repository<Cabinet>,
     ) {}
 
@@ -34,8 +33,6 @@ export class MedicineService {
 
         const batchDetailEntity = this.batchDetailRepo.create(detail);
 
-        console.log(batchDetailEntity.total_type);
-
         for (const medicine of medicines) {
             const medicineEntity = await this.cabinetRepo.findOne({
                 where: { medicine_id: medicine.medicine_id },
@@ -45,7 +42,6 @@ export class MedicineService {
                 messages.push(`Medicine ${medicine.medicine_id} not found`);
             } else {
                 medicineEntity.remaining += medicine.quantity;
-                await this.cabinetRepo.save(medicineEntity);
 
                 const batchMedicineEntity = this.batchMedicineRepo.create(
                     Object.assign({}, medicine),
@@ -56,6 +52,7 @@ export class MedicineService {
 
                 batchDetailEntity.total_type += 1;
 
+                await this.cabinetRepo.save(medicineEntity);
                 await this.batchMedicineRepo.save(batchMedicineEntity);
             }
         }
@@ -74,3 +71,5 @@ export class MedicineService {
         return medicine ? medicine : { message: 'Medicine not found' };
     }
 }
+
+

@@ -11,6 +11,10 @@ export class CreateMedicineDto {
 
     @ApiProperty()
     @IsNotEmpty()
+    costOut: number;
+
+    @ApiProperty()
+    @IsNotEmpty()
     name: string;
 
     @ApiProperty()

@@ -19,6 +19,9 @@ export class Cabinet extends BaseEntity {
     remaining: number;
 
     @Column()
+    costOut: number;
+
+    @Column()
     name: string;
 
     @Column()

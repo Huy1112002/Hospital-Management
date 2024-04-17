@@ -31,7 +31,7 @@ export class BatchDetail extends BaseEntity {
     placer_phone: string;
 
     // FIX THIS, NOT NULLABLE
-    @Column({ nullable: true })
+    @Column() //{ nullable: true }
     import_date: Date;
 
     @Column()

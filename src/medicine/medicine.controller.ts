@@ -27,6 +27,7 @@ export class MedicineController {
     @HttpCode(HttpStatus.CREATED)
     @Post()
     createMedicine(@Body() createMedicineDto: CreateMedicineDto) {
+        console.log('do controller');
         return this.medicineService.createMedicine(createMedicineDto);
     }
 
@@ -42,4 +43,11 @@ export class MedicineController {
     getMedicineById(@Param('id') medicine_id: string) {
         return this.medicineService.getMedicineById(medicine_id);
     }
+
+    @Public()
+    @Patch(':id')
+    useMedicine(@Param('id') medicine_id: string, @Body('amount') amount: number) {
+        return this.medicineService.useMedicine(medicine_id, amount);
+    }
+
 }

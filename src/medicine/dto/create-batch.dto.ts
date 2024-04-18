@@ -8,7 +8,6 @@ class Medicine {
     @IsNotEmpty()
     quantity: number;
 
-
     @IsNotEmpty()
     costIn: number;
 
@@ -37,8 +36,8 @@ export class CreateBatchDto {
     @Length(10)
     placer_phone: string;
 
-    // FIX THIS, NOT OPTIONAL
-    @IsOptional()
+    @ApiProperty()
+    @IsNotEmpty()
     import_date: Date;
 
     @IsOptional()

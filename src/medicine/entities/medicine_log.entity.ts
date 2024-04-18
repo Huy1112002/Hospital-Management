@@ -3,9 +3,9 @@ import { Column, Entity, PrimaryGeneratedColumn, JoinColumn, ManyToOne } from 't
 
 import { BatchMedicine } from './batch_medicine.entity';
 
-@Entity({ name: 'history_export_medicines' })
-export class HistoryExportMedicine {
-    @PrimaryGeneratedColumn('uuid')
+@Entity({ name: 'medicine_logs' })
+export class MedicineLog {
+    @PrimaryGeneratedColumn()
     id: string;
 
     @Column()
@@ -15,13 +15,17 @@ export class HistoryExportMedicine {
     export_date: Date;
 
     @Column()
+    quantity: number;
+
+    @Column()
     costOut: number;
 
     @Column()
-    batchMedicine_id: string;
+    description: string;
 
-    @ManyToOne(() => BatchMedicine, (batchMedicine) => batchMedicine.historyExports, { cascade: true })
+    @ManyToOne(() => BatchMedicine, (batchMedicine) => batchMedicine.medicineLogs, {
+        cascade: true,
+    })
     @JoinColumn({ name: 'batchMedicine_id' })
     batchMedicine: BatchMedicine;
-
 }

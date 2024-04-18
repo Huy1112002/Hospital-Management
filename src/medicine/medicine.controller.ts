@@ -1,19 +1,6 @@
-import {
-    Controller,
-    Get,
-    Post,
-    Body,
-    Patch,
-    Param,
-    Delete,
-    Query,
-    HttpCode,
-    HttpStatus,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, HttpCode, HttpStatus } from '@nestjs/common';
 
 import { Public } from 'src/common/decorators/auth.decorator';
-import { UserRoles } from 'src/common/decorators/roles.decorator';
-import { Role } from 'src/common/enums/role.enum';
 import { MedicineService } from './medicine.service';
 import { CreateBatchDto } from './dto/create-batch.dto';
 import { CreateMedicineDto } from './dto/create-medicine.dto';
@@ -40,14 +27,19 @@ export class MedicineController {
 
     @Public()
     @Get(':id')
-    getMedicineById(@Param('id') medicine_id: string) {
-        return this.medicineService.getMedicineById(medicine_id);
+    getMedicine(@Param('id') medicine_id: string) {
+        return this.medicineService.getMedicine(medicine_id);
     }
 
     @Public()
-    @Patch(':id')
+    @Patch('use/:id')
     useMedicine(@Param('id') medicine_id: string, @Body('amount') amount: number) {
         return this.medicineService.useMedicine(medicine_id, amount);
     }
 
+    @Public()
+    @Patch('cost/:id')
+    updateCostOut(@Param('id') medicine_id: string, @Body('cost') newCost: number) {
+        return this.medicineService.updateCostOut(medicine_id, newCost);
+    }
 }

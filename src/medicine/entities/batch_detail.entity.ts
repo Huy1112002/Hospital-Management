@@ -6,8 +6,6 @@ import {
     PrimaryGeneratedColumn,
     CreateDateColumn,
     UpdateDateColumn,
-    OneToOne,
-    JoinColumn,
     OneToMany,
 } from 'typeorm';
 
@@ -30,8 +28,7 @@ export class BatchDetail extends BaseEntity {
     @Column()
     placer_phone: string;
 
-    // FIX THIS, NOT NULLABLE
-    @Column() //{ nullable: true }
+    @Column()
     import_date: Date;
 
     @Column()
@@ -40,12 +37,12 @@ export class BatchDetail extends BaseEntity {
     @Column({ nullable: true })
     description: string;
 
-    @OneToMany(() => BatchMedicine, (batchMedicine) => batchMedicine.batchDetail)
-    batchMedicines: BatchMedicine[];
-
     @CreateDateColumn()
     createdAt: Date;
 
     @UpdateDateColumn()
     updatedAt: Date;
+
+    @OneToMany(() => BatchMedicine, (batchMedicine) => batchMedicine.batchDetail)
+    batchMedicines: BatchMedicine[];
 }

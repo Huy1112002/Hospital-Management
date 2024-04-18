@@ -1,9 +1,17 @@
 import 'reflect-metadata';
-import { Column, Entity, PrimaryGeneratedColumn, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import {
+    Column,
+    Entity,
+    PrimaryGeneratedColumn,
+    JoinColumn,
+    ManyToOne,
+    OneToMany,
+    OneToOne,
+} from 'typeorm';
 
 import { BatchDetail } from './batch_detail.entity';
-import { Cabinet } from './cabinet.entity';
-import { HistoryExportMedicine } from './history_export_medicine.entity';
+import { AvailableMedicine } from './available_medicine.entity';
+import { MedicineLog } from './medicine_log.entity';
 
 @Entity({ name: 'batch_medicines' })
 export class BatchMedicine {
@@ -11,35 +19,30 @@ export class BatchMedicine {
     id: string;
 
     @Column()
-    quantity: number;
+    medicine_id: string;
 
     @Column()
-    remaining: number;
+    quantity: number;
 
     @Column()
     costIn: number;
 
-    // FIX THIS, NOT NULLABLE
-    @Column()//{ nullable: true }
+    @Column()
     expire: Date;
 
     @Column()
     vendor: string;
 
-    @Column()
-    batchDetail_id: string;
-
-    @Column()
-    medicine_id: string;
-
     @ManyToOne(() => BatchDetail, (batchDetail) => batchDetail.batchMedicines, { cascade: true })
     @JoinColumn({ name: 'batchDetail_id' })
     batchDetail: BatchDetail;
 
-    @ManyToOne(() => Cabinet, (cabinet) => cabinet.batchMedicines, { cascade: true })
-    @JoinColumn({ name: 'medicine_id' })
-    medicine: Cabinet;
+    @OneToOne(() => AvailableMedicine, (availableMedicine) => availableMedicine.batchMedicine, {
+        cascade: true,
+    })
+    @JoinColumn({ name: 'availableMedicine_id' })
+    availableMedicine: AvailableMedicine;
 
-    @OneToMany(() => HistoryExportMedicine, (historyExport) =>historyExport.batchMedicine)
-    historyExports: HistoryExportMedicine[];
+    @OneToMany(() => MedicineLog, (log) => log.batchMedicine)
+    medicineLogs: MedicineLog[];
 }

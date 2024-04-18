@@ -8,7 +8,8 @@ import {
     UpdateDateColumn,
     OneToMany,
 } from 'typeorm';
-import { BatchMedicine } from './batch_medicine.entity';
+
+import { AvailableMedicine } from './available_medicine.entity';
 
 @Entity({ name: 'cabinet' })
 export class Cabinet extends BaseEntity {
@@ -33,12 +34,12 @@ export class Cabinet extends BaseEntity {
     @Column({ type: 'json' })
     ingredients: object;
 
-    @OneToMany(() => BatchMedicine, (batchMedicine) => batchMedicine.medicine)
-    batchMedicines: BatchMedicine[];
-
     @CreateDateColumn()
     createdAt: Date;
 
     @UpdateDateColumn()
     updatedAt: Date;
+
+    @OneToMany(() => AvailableMedicine, (availableMedicine) => availableMedicine.medicine)
+    availableMedicines: AvailableMedicine[];
 }

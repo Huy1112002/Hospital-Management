@@ -6,7 +6,7 @@ import { BatchMedicine } from './batch_medicine.entity';
 @Entity({ name: 'medicine_logs' })
 export class MedicineLog {
     @PrimaryGeneratedColumn()
-    id: string;
+    id: number;
 
     @Column()
     medicine_id: string;
@@ -15,17 +15,18 @@ export class MedicineLog {
     export_date: Date;
 
     @Column()
-    quantity: number;
+    cost_out: number;
 
     @Column()
-    costOut: number;
+    prev_remaining: number;
+
+    @Column()
+    curr_remaining: number;
 
     @Column()
     description: string;
 
-    @ManyToOne(() => BatchMedicine, (batchMedicine) => batchMedicine.medicineLogs, {
-        cascade: true,
-    })
+    @ManyToOne(() => BatchMedicine, (batchMedicine) => batchMedicine.medicineLogs, { cascade: true })
     @JoinColumn({ name: 'batchMedicine_id' })
     batchMedicine: BatchMedicine;
 }

@@ -1,13 +1,5 @@
 import 'reflect-metadata';
-import {
-    BaseEntity,
-    Column,
-    Entity,
-    PrimaryColumn,
-    CreateDateColumn,
-    UpdateDateColumn,
-    OneToMany,
-} from 'typeorm';
+import { BaseEntity, Column, Entity, PrimaryColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
 
 import { AvailableMedicine } from './available_medicine.entity';
 
@@ -17,13 +9,13 @@ export class Cabinet extends BaseEntity {
     medicine_id: string;
 
     @Column()
+    name: string;
+
+    @Column()
     remaining: number;
 
     @Column()
     costOut: number;
-
-    @Column()
-    name: string;
 
     @Column()
     unit: string;

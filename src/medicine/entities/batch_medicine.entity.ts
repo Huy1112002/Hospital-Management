@@ -1,13 +1,5 @@
 import 'reflect-metadata';
-import {
-    Column,
-    Entity,
-    PrimaryGeneratedColumn,
-    JoinColumn,
-    ManyToOne,
-    OneToMany,
-    OneToOne,
-} from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, JoinColumn, ManyToOne, OneToMany, OneToOne } from 'typeorm';
 
 import { BatchDetail } from './batch_detail.entity';
 import { AvailableMedicine } from './available_medicine.entity';
@@ -37,10 +29,7 @@ export class BatchMedicine {
     @JoinColumn({ name: 'batchDetail_id' })
     batchDetail: BatchDetail;
 
-    @OneToOne(() => AvailableMedicine, (availableMedicine) => availableMedicine.batchMedicine, {
-        cascade: true,
-    })
-    @JoinColumn({ name: 'availableMedicine_id' })
+    @OneToOne(() => AvailableMedicine, (availableMedicine) => availableMedicine.batchMedicine)
     availableMedicine: AvailableMedicine;
 
     @OneToMany(() => MedicineLog, (log) => log.batchMedicine)

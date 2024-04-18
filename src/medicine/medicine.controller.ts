@@ -42,4 +42,16 @@ export class MedicineController {
     updateCostOut(@Param('id') medicine_id: string, @Body('cost') newCost: number) {
         return this.medicineService.updateCostOut(medicine_id, newCost);
     }
+
+    @Public()
+    @Get('log/:id')
+    getLogsById(@Param('id') medicine_id: string) {
+        return this.medicineService.getLogsById(medicine_id);
+    }
+
+    @Public()
+    @Get('batch/log/:id')
+    getLogsByBatchId(@Param('id') id: string) {
+        return this.medicineService.getLogsByBatchId(id);
+    }
 }

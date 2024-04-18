@@ -1,13 +1,5 @@
 import 'reflect-metadata';
-import {
-    Column,
-    Entity,
-    PrimaryGeneratedColumn,
-    JoinColumn,
-    OneToOne,
-    ManyToOne,
-    OneToMany,
-} from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, JoinColumn, OneToOne, ManyToOne, OneToMany } from 'typeorm';
 
 import { Cabinet } from './cabinet.entity';
 import { BatchMedicine } from './batch_medicine.entity';
@@ -20,15 +12,11 @@ export class AvailableMedicine {
     @Column()
     remaining: number;
 
-    @ManyToOne(() => Cabinet, (cabinet) => cabinet.availableMedicines, {
-        cascade: true,
-        onDelete: 'SET NULL',
-    })
+    @ManyToOne(() => Cabinet, (cabinet) => cabinet.availableMedicines, { cascade: true, onDelete: 'SET NULL' })
     @JoinColumn({ name: 'medicine_id' })
     medicine: Cabinet;
 
-    @OneToOne(() => BatchMedicine, (batchMedicine) => batchMedicine.availableMedicine, {
-        onDelete: 'SET NULL',
-    })
+    @OneToOne(() => BatchMedicine, (batchMedicine) => batchMedicine.availableMedicine, { cascade: true, onDelete: 'SET NULL' })
+    @JoinColumn({ name: 'batchMedicine_id' })
     batchMedicine: BatchMedicine;
 }

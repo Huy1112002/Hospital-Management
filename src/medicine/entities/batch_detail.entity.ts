@@ -1,13 +1,5 @@
 import 'reflect-metadata';
-import {
-    BaseEntity,
-    Column,
-    Entity,
-    PrimaryGeneratedColumn,
-    CreateDateColumn,
-    UpdateDateColumn,
-    OneToMany,
-} from 'typeorm';
+import { BaseEntity, Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
 
 import { BatchMedicine } from './batch_medicine.entity';
 

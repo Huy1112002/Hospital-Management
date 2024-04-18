@@ -21,9 +21,7 @@ export class MedicineService {
     ) {}
 
     async createMedicine(createMedicineDto: CreateMedicineDto) {
-        const medicine = await this.cabinetRepo.findOne({
-            where: { medicine_id: createMedicineDto.medicine_id },
-        });
+        const medicine = await this.cabinetRepo.findOne({ where: { medicine_id: createMedicineDto.medicine_id } });
 
         return medicine ? { message: 'Medicine already exists' } : this.cabinetRepo.save(createMedicineDto);
     }
@@ -35,9 +33,7 @@ export class MedicineService {
 
         const messages: string[] = [];
         for (const medicine of medicines) {
-            const medicineEntity = await this.cabinetRepo.findOne({
-                where: { medicine_id: medicine.medicine_id },
-            });
+            const medicineEntity = await this.cabinetRepo.findOne({ where: { medicine_id: medicine.medicine_id } });
 
             if (medicineEntity) {
                 const batchMedicineEntity = this.batchMedicineRepo.create({
@@ -52,16 +48,12 @@ export class MedicineService {
                 });
 
                 batchMedicineEntity.batchDetail = batchDetailEntity;
-                batchMedicineEntity.availableMedicine = availableMedicineEntity;
 
                 availableMedicineEntity.medicine = medicineEntity;
+                availableMedicineEntity.batchMedicine = batchMedicineEntity;
 
                 batchDetailEntity.total_type += 1;
                 medicineEntity.remaining += medicine.quantity;
-
-                console.log(medicineEntity);
-                console.log(batchMedicineEntity);
-                console.log(availableMedicineEntity);
 
                 await this.cabinetRepo.save(medicineEntity);
                 await this.batchMedicineRepo.save(batchMedicineEntity);
@@ -109,40 +101,35 @@ export class MedicineService {
         medicine.availableMedicines.sort((a, b) => a.batchMedicine.expire.getTime() - b.batchMedicine.expire.getTime());
 
         let logs = [];
-        for (let i = 0; i < medicine.availableMedicines.length; i++) {
-            const availableMedicine = medicine.availableMedicines[i];
-
+        for (const availableMedicine of medicine.availableMedicines) {
             const log = {
                 medicine_id,
                 export_date: new Date(),
-                quantity: 0,
-                costOut: medicine.costOut,
+                cost_out: medicine.costOut,
+                prev_remaining: availableMedicine.remaining,
+                curr_remaining: 0,
                 description: '',
                 batchMedicine: availableMedicine.batchMedicine,
             };
 
             if (amount >= availableMedicine.remaining) {
-                log.quantity = availableMedicine.remaining;
+                log.curr_remaining = 0;
                 log.description =
                     amount === availableMedicine.remaining
-                        ? `${availableMedicine.batchMedicine.medicine_id} not enough, need ${amount}, take ${log.quantity}`
-                        : `Amount ${amount}, take all from ${availableMedicine.batchMedicine.medicine_id}`;
+                        ? `From medicine batch ${availableMedicine.batchMedicine.id} take all (${amount}) medicine ${medicine_id}`
+                        : `Medicine batch ${availableMedicine.batchMedicine.id} not enough medicine ${medicine_id}, need ${amount}, remainning ${availableMedicine.remaining}`;
 
                 amount -= availableMedicine.remaining;
 
                 // Remains 0, remove from availableMedicines
                 this.availableMedRepo.remove(availableMedicine);
-
-                // Remove from cabinet
-                medicine.availableMedicines.splice(i, 1);
-                i--;
             } else {
-                log.quantity = amount;
-                log.description = `Amount ${amount}, take ${log.quantity} from ${availableMedicine.batchMedicine.medicine_id}`;
+                log.curr_remaining = availableMedicine.remaining - amount;
+                log.description = `From medicine batch ${availableMedicine.batchMedicine.id} take ${amount} medicine ${medicine_id}`;
 
                 availableMedicine.remaining -= amount;
 
-                await this.batchMedicineRepo.save(availableMedicine);
+                await this.availableMedRepo.save(availableMedicine);
 
                 amount = 0;
             }
@@ -188,10 +175,8 @@ export class MedicineService {
             return { message: 'Batch not found' };
         }
 
-        const logs = batch.batchMedicines.map((batchMedicine) => {
-            console.log(batchMedicine);
-            this.getLogsById(batchMedicine.medicine_id);
-        });
+        const logs = [];
+        batch.batchMedicines.forEach((batchMedicine) => logs.push(...batchMedicine.medicineLogs));
 
         return logs;
     }

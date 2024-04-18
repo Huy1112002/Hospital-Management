@@ -8,6 +8,10 @@ export class CreateMedicineDto {
 
     @ApiProperty()
     @IsNotEmpty()
+    name: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
     unit: string;
 
     @IsOptional()

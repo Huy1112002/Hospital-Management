@@ -31,9 +31,15 @@ export class MedicineService {
 
         const batchDetailEntity = this.batchDetailRepo.create(detail);
 
+        // Get all medicine entities from cabinet which id in medicines
+        const medicineEntities = await this.cabinetRepo.findByIds(medicines.map((medicine) => medicine.medicine_id));
+
+        const batchMedicineEntities: BatchMedicine[] = [];
+        const availableMedicineEntities: AvailableMedicine[] = [];
+
         const messages: string[] = [];
         for (const medicine of medicines) {
-            const medicineEntity = await this.cabinetRepo.findOne({ where: { medicine_id: medicine.medicine_id } });
+            const medicineEntity = medicineEntities.find((entity) => entity.medicine_id === medicine.medicine_id);
 
             if (medicineEntity) {
                 const batchMedicineEntity = this.batchMedicineRepo.create({
@@ -55,9 +61,8 @@ export class MedicineService {
                 batchDetailEntity.total_type += 1;
                 medicineEntity.remaining += medicine.quantity;
 
-                await this.cabinetRepo.save(medicineEntity);
-                await this.batchMedicineRepo.save(batchMedicineEntity);
-                await this.availableMedRepo.save(availableMedicineEntity);
+                batchMedicineEntities.push(batchMedicineEntity);
+                availableMedicineEntities.push(availableMedicineEntity);
 
                 messages.push(`Medicine ${medicine.medicine_id} added to batch`);
             } else {
@@ -66,7 +71,10 @@ export class MedicineService {
         }
 
         if (batchDetailEntity.total_type) {
+            await this.cabinetRepo.save(medicineEntities);
             await this.batchDetailRepo.save(batchDetailEntity);
+            await this.batchMedicineRepo.save(batchMedicineEntities);
+            await this.availableMedRepo.save(availableMedicineEntities);
         }
 
         return { messages };
@@ -141,6 +149,7 @@ export class MedicineService {
 
             if (!amount) break;
         }
+
         return logs;
     }
 

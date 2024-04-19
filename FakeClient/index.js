@@ -26,6 +26,20 @@ const batch = {
             expire: new Date(),
             vendor: 'USA',
         },
+        {
+            medicine_id: 'T3',
+            quantity: 30,
+            costIn: 200,
+            expire: new Date(),
+            vendor: 'VN',
+        },
+        {
+            medicine_id: 'T4',
+            quantity: 30,
+            costIn: 200,
+            expire: new Date(),
+            vendor: 'VN',
+        },
     ],
     description: 'da kiem tra',
 };
@@ -42,12 +56,12 @@ const medicine = {
     ingredients: ["I don't know B"],
 };
 
-fetch('http://localhost:3000/medicine/cost/T1', {
-    method: 'PATCH',
+fetch('http://localhost:3000/medicine/batch', {
+    method: 'POST',
     headers: {
         'Content-Type': 'application/json',
     },
-    body: JSON.stringify(newCost),
+    body: JSON.stringify(batch),
 })
     .then((response) => response.json())
     .then((data) => {

@@ -17,7 +17,7 @@ export class BatchMedicine {
     quantity: number;
 
     @Column()
-    costIn: number;
+    cost_in: number;
 
     @Column()
     expire: Date;

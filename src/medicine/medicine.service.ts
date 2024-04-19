@@ -45,7 +45,7 @@ export class MedicineService {
                 const batchMedicineEntity = this.batchMedicineRepo.create({
                     medicine_id: medicine.medicine_id,
                     quantity: medicine.quantity,
-                    costIn: medicine.costIn,
+                    cost_in: medicine.cost_in,
                     expire: medicine.expire,
                     vendor: medicine.vendor,
                 });
@@ -113,7 +113,7 @@ export class MedicineService {
             const log = {
                 medicine_id,
                 export_date: new Date(),
-                cost_out: medicine.costOut,
+                cost_out: medicine.cost_out,
                 prev_remaining: availableMedicine.remaining,
                 curr_remaining: 0,
                 description: '',
@@ -160,7 +160,7 @@ export class MedicineService {
             return { message: 'Medicine not found' };
         }
 
-        medicine.costOut = newCost;
+        medicine.cost_out = newCost;
         await this.cabinetRepo.save(medicine);
 
         return { message: 'Cost updated' };

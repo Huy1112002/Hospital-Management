@@ -15,13 +15,13 @@ export class Cabinet extends BaseEntity {
     remaining: number;
 
     @Column()
-    costOut: number;
+    cost_out: number;
 
     @Column()
     unit: string;
 
-    @Column({ type: 'json', nullable: true })
-    description: object;
+    @Column({ nullable: true })
+    description: string;
 
     @Column({ type: 'json' })
     ingredients: object;

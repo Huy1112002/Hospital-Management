@@ -9,7 +9,7 @@ class Medicine {
     quantity: number;
 
     @IsNotEmpty()
-    costIn: number;
+    cost_in: number;
 
     @IsNotEmpty()
     expire: Date;

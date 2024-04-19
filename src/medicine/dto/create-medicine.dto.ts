@@ -19,12 +19,12 @@ export class CreateMedicineDto {
 
     @ApiProperty()
     @IsNotEmpty()
-    costOut: number;
+    cost_out: number;
 
     @ApiProperty()
     @IsNotEmpty()
     ingredients: object;
 
     @IsOptional()
-    description: object;
+    description: string;
 }

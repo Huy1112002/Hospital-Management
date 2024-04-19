@@ -10,7 +10,7 @@ export class MedicineController {
     constructor(private readonly medicineService: MedicineService) {}
 
     // @UserRoles(Role.Admin)
-    @Public()
+    @Public() // <- add this for testing
     @HttpCode(HttpStatus.CREATED)
     @Post()
     createMedicine(@Body() createMedicineDto: CreateMedicineDto) {
@@ -18,38 +18,38 @@ export class MedicineController {
         return this.medicineService.createMedicine(createMedicineDto);
     }
 
-    @Public()
+    @Public() // <- add this for testing
     @HttpCode(HttpStatus.CREATED)
     @Post('/batch')
     create(@Body() createBatchDto: CreateBatchDto) {
         return this.medicineService.createBatch(createBatchDto);
     }
 
-    @Public()
+    @Public() // <- add this for testing
     @Get(':id')
     getMedicine(@Param('id') medicine_id: string) {
         return this.medicineService.getMedicine(medicine_id);
     }
 
-    @Public()
+    @Public() // <- add this for testing
     @Patch('use/:id')
     useMedicine(@Param('id') medicine_id: string, @Body('amount') amount: number) {
         return this.medicineService.useMedicine(medicine_id, amount);
     }
 
-    @Public()
+    @Public() // <- add this for testing
     @Patch('cost/:id')
     updateCostOut(@Param('id') medicine_id: string, @Body('cost') newCost: number) {
         return this.medicineService.updateCostOut(medicine_id, newCost);
     }
 
-    @Public()
+    @Public() // <- add this for testing
     @Get('log/:id')
     getLogsById(@Param('id') medicine_id: string) {
         return this.medicineService.getLogsById(medicine_id);
     }
 
-    @Public()
+    @Public() // <- add this for testing
     @Get('batch/log/:id')
     getLogsByBatchId(@Param('id') id: string) {
         return this.medicineService.getLogsByBatchId(id);

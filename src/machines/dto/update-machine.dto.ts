@@ -1,7 +1,20 @@
+import { ApiProperty } from '@nestjs/swagger';
+import { IsOptional } from 'class-validator';
 
 export class UpdateMachineDto {
-    name?: string
-    vendor?:string
-    status?: string
-    description?: string
+    @ApiProperty()
+    @IsOptional()
+    name: string;
+
+    @ApiProperty()
+    @IsOptional()
+    vendor: string;
+
+    @ApiProperty()
+    @IsOptional()
+    status: string;
+
+    @ApiProperty()
+    @IsOptional()
+    description: string = '';
 }

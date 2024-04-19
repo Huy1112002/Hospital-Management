@@ -20,12 +20,116 @@ export class MedicineService {
         @InjectRepository(MedicineLog) private medicineLogRepo: Repository<MedicineLog>,
     ) {}
 
+    // ### Service for medicine
     async createMedicine(createMedicineDto: CreateMedicineDto) {
         const medicine = await this.cabinetRepo.findOne({ where: { medicine_id: createMedicineDto.medicine_id } });
 
         return medicine ? { message: 'Medicine already exists' } : this.cabinetRepo.save(createMedicineDto);
     }
 
+    async getMedicines() {
+        return await this.cabinetRepo.find();
+    }
+
+    async getMedicine(medicine_id: string) {
+        const medicine = await this.cabinetRepo.findOne({
+            where: { medicine_id },
+            relations: ['availableMedicines'],
+        });
+
+        return medicine ? medicine : { message: 'Medicine not found' };
+    }
+
+    async useMedicine(medicine_id: string, amount: number) {
+        const medicine = await this.cabinetRepo.findOne({
+            where: { medicine_id },
+            relations: ['availableMedicines', 'availableMedicines.batchMedicine'],
+        });
+
+        if (!medicine) {
+            return { message: 'Medicine not found' };
+        }
+
+        if (medicine.remaining < amount) {
+            return { message: 'Not enough medicine' };
+        }
+
+        medicine.remaining -= amount;
+        await this.cabinetRepo.save(medicine);
+
+        medicine.availableMedicines.sort((a, b) => a.batchMedicine.expire.getTime() - b.batchMedicine.expire.getTime());
+
+        let total_cost = 0;
+        let logs = [];
+
+        for (const availableMedicine of medicine.availableMedicines) {
+            const log = {
+                medicine_id,
+                export_date: new Date(),
+                cost_out: medicine.cost_out,
+                prev_remaining: availableMedicine.remaining,
+                curr_remaining: 0,
+                description: '',
+                batchMedicine: availableMedicine.batchMedicine,
+            };
+
+            if (amount >= availableMedicine.remaining) {
+                log.curr_remaining = 0;
+                log.description =
+                    amount === availableMedicine.remaining
+                        ? `From medicine batch ${availableMedicine.batchMedicine.id} take all (${amount}) medicine ${medicine_id}`
+                        : `Medicine batch ${availableMedicine.batchMedicine.id} not enough medicine ${medicine_id}, need ${amount}, remainning ${availableMedicine.remaining}, take all`;
+
+                total_cost += availableMedicine.remaining * medicine.cost_out;
+
+                amount -= availableMedicine.remaining;
+
+                // Remains 0, remove from availableMedicines
+                this.availableMedRepo.remove(availableMedicine);
+            } else {
+                log.curr_remaining = availableMedicine.remaining - amount;
+                log.description = `From medicine batch ${availableMedicine.batchMedicine.id} take ${amount} medicine ${medicine_id}`;
+
+                total_cost += amount * medicine.cost_out;
+
+                availableMedicine.remaining -= amount;
+
+                await this.availableMedRepo.save(availableMedicine);
+
+                amount = 0;
+            }
+
+            logs.push(log.description);
+
+            const medicineLogEntity = this.medicineLogRepo.create(log);
+            await this.medicineLogRepo.save(medicineLogEntity);
+
+            if (!amount) break;
+        }
+
+        return { total_cost, logs };
+    }
+
+    async updateCostOut(medicine_id: string, newCost: number) {
+        const medicine = await this.cabinetRepo.findOne({ where: { medicine_id } });
+
+        if (!medicine) {
+            return { message: 'Medicine not found' };
+        }
+
+        medicine.cost_out = newCost;
+        await this.cabinetRepo.save(medicine);
+
+        return { message: 'Cost updated' };
+    }
+
+    async getLogsById(medicine_id: string) {
+        const logs = await this.medicineLogRepo.find({ where: { medicine_id }, relations: ['batchMedicine'] });
+
+        return logs.length ? logs : { message: `No logs found for medicine ${medicine_id}` };
+    }
+
+    // ### Service for batch
     async createBatch(createBatchDto: CreateBatchDto) {
         const { medicines, ...detail } = createBatchDto;
 
@@ -75,103 +179,22 @@ export class MedicineService {
             await this.batchDetailRepo.save(batchDetailEntity);
             await this.batchMedicineRepo.save(batchMedicineEntities);
             await this.availableMedRepo.save(availableMedicineEntities);
+
+            return { batch_id: batchDetailEntity.id, messages };
         }
 
         return { messages };
     }
 
-    async getMedicine(medicine_id: string) {
-        const medicine = await this.cabinetRepo.findOne({
-            where: { medicine_id },
-            relations: ['availableMedicines'],
-        });
-
-        return medicine ? medicine : { message: 'Medicine not found' };
+    async getBatches() {
+        return await this.batchDetailRepo.find({ relations: ['batchMedicines'] });
     }
 
-    async useMedicine(medicine_id: string, amount: number) {
-        const medicine = await this.cabinetRepo.findOne({
-            where: { medicine_id },
-            relations: ['availableMedicines', 'availableMedicines.batchMedicine'],
+    async getBatch(id: string) {
+        return await this.batchDetailRepo.findOne({
+            where: { id },
+            relations: ['batchMedicines'],
         });
-
-        if (!medicine) {
-            return { message: 'Medicine not found' };
-        }
-
-        if (medicine.remaining < amount) {
-            return { message: 'Not enough medicine' };
-        }
-
-        medicine.remaining -= amount;
-        await this.cabinetRepo.save(medicine);
-
-        medicine.availableMedicines.sort((a, b) => a.batchMedicine.expire.getTime() - b.batchMedicine.expire.getTime());
-
-        let logs = [];
-        for (const availableMedicine of medicine.availableMedicines) {
-            const log = {
-                medicine_id,
-                export_date: new Date(),
-                cost_out: medicine.cost_out,
-                prev_remaining: availableMedicine.remaining,
-                curr_remaining: 0,
-                description: '',
-                batchMedicine: availableMedicine.batchMedicine,
-            };
-
-            if (amount >= availableMedicine.remaining) {
-                log.curr_remaining = 0;
-                log.description =
-                    amount === availableMedicine.remaining
-                        ? `From medicine batch ${availableMedicine.batchMedicine.id} take all (${amount}) medicine ${medicine_id}`
-                        : `Medicine batch ${availableMedicine.batchMedicine.id} not enough medicine ${medicine_id}, need ${amount}, remainning ${availableMedicine.remaining}`;
-
-                amount -= availableMedicine.remaining;
-
-                // Remains 0, remove from availableMedicines
-                this.availableMedRepo.remove(availableMedicine);
-            } else {
-                log.curr_remaining = availableMedicine.remaining - amount;
-                log.description = `From medicine batch ${availableMedicine.batchMedicine.id} take ${amount} medicine ${medicine_id}`;
-
-                availableMedicine.remaining -= amount;
-
-                await this.availableMedRepo.save(availableMedicine);
-
-                amount = 0;
-            }
-
-            logs.push(log.description);
-
-            const medicineLogEntity = this.medicineLogRepo.create(log);
-            await this.medicineLogRepo.save(medicineLogEntity);
-
-            if (!amount) break;
-        }
-
-        return logs;
-    }
-
-    async updateCostOut(medicine_id: string, newCost: number) {
-        const medicine = await this.cabinetRepo.findOne({ where: { medicine_id } });
-
-        if (!medicine) {
-            return { message: 'Medicine not found' };
-        }
-
-        medicine.cost_out = newCost;
-        await this.cabinetRepo.save(medicine);
-
-        return { message: 'Cost updated' };
-    }
-
-    async getLogsById(medicine_id: string) {
-        const logs = await this.medicineLogRepo.find({
-            where: { medicine_id },
-        });
-
-        return logs.length ? logs : { message: `No logs found for medicine ${medicine_id}` };
     }
 
     async getLogsByBatchId(id: string) {

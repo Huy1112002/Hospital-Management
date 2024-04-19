@@ -44,7 +44,7 @@ const batch = {
     description: 'da kiem tra',
 };
 
-const amount = { amount: 5 };
+const amount = { amount: 200 };
 
 const newCost = { cost: 166 };
 
@@ -56,12 +56,12 @@ const medicine = {
     ingredients: ["I don't know B"],
 };
 
-fetch('http://localhost:3000/medicine/batch', {
-    method: 'POST',
+fetch('http://localhost:3000/medicine/use/T3', {
+    method: 'PATCH',
     headers: {
         'Content-Type': 'application/json',
     },
-    body: JSON.stringify(batch),
+    body: JSON.stringify(amount),
 })
     .then((response) => response.json())
     .then((data) => {

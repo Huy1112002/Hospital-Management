@@ -6,9 +6,6 @@ export class CreateMedicineDto {
     @IsNotEmpty()
     medicine_id: string;
 
-    @IsOptional()
-    remaining: number = 0;
-
     @ApiProperty()
     @IsNotEmpty()
     name: string;
@@ -18,9 +15,16 @@ export class CreateMedicineDto {
     unit: string;
 
     @IsOptional()
-    description: object;
+    remaining: number = 0;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    cost_out: number;
 
     @ApiProperty()
     @IsNotEmpty()
     ingredients: object;
+
+    @IsOptional()
+    description: string;
 }

@@ -1,14 +1,7 @@
 import 'reflect-metadata';
-import {
-    BaseEntity,
-    Column,
-    Entity,
-    PrimaryColumn,
-    CreateDateColumn,
-    UpdateDateColumn,
-    OneToMany,
-} from 'typeorm';
-import { BatchMedicine } from './batch_medicine.entity';
+import { BaseEntity, Column, Entity, PrimaryColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+
+import { AvailableMedicine } from './available_medicine.entity';
 
 @Entity({ name: 'cabinet' })
 export class Cabinet extends BaseEntity {
@@ -16,26 +9,29 @@ export class Cabinet extends BaseEntity {
     medicine_id: string;
 
     @Column()
+    name: string;
+
+    @Column()
     remaining: number;
 
     @Column()
-    name: string;
+    cost_out: number;
 
     @Column()
     unit: string;
 
-    @Column({ type: 'json', nullable: true })
-    description: object;
+    @Column({ nullable: true })
+    description: string;
 
     @Column({ type: 'json' })
     ingredients: object;
-
-    @OneToMany(() => BatchMedicine, (batchMedicine) => batchMedicine.medicine)
-    batchMedicines: BatchMedicine[];
 
     @CreateDateColumn()
     createdAt: Date;
 
     @UpdateDateColumn()
     updatedAt: Date;
+
+    @OneToMany(() => AvailableMedicine, (availableMedicine) => availableMedicine.medicine)
+    availableMedicines: AvailableMedicine[];
 }

@@ -9,11 +9,10 @@ class Medicine {
     quantity: number;
 
     @IsNotEmpty()
-    price: number;
+    cost_in: number;
 
-    // @IsNotEmpty()
-    // @IsDate()
-    // expiration_date: Date;
+    @IsNotEmpty()
+    expire: Date;
 
     @IsNotEmpty()
     vendor: string;
@@ -37,9 +36,8 @@ export class CreateBatchDto {
     @Length(10)
     placer_phone: string;
 
-    // FIX THIS, NOT OPTIONAL
-    @IsOptional()
-    @IsDate()
+    @ApiProperty()
+    @IsNotEmpty()
     import_date: Date;
 
     @IsOptional()

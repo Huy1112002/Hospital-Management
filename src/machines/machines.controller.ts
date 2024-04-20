@@ -6,34 +6,40 @@ import { RolesGuard } from '../common/guards/role.guard';
 import { UserRoles } from '../common/decorators/roles.decorator';
 import { Role } from '../common/enums/role.enum';
 
+import { Public } from 'src/common/decorators/auth.decorator';
 
-@UserRoles(Role.Admin)
+// @UserRoles(Role.Admin)
 @Controller('machines')
 export class MachinesController {
-  constructor(private readonly machinesService: MachinesService) {}
+    constructor(private readonly machinesService: MachinesService) {}
 
-  @Post('create')
-  create(@Body() createMachineDto: CreateMachineDto) {
-    return this.machinesService.create(createMachineDto);
-  }
+    @Public() // <- add this for testing
+    @Post()
+    create(@Body() createMachineDto: CreateMachineDto) {
+        return this.machinesService.create(createMachineDto);
+    }
 
-  @Get()
-  findAll() {
-    return this.machinesService.findAll();
-  }
+    @Public() // <- add this for testing
+    @Get()
+    findAll() {
+        return this.machinesService.findAll();
+    }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.machinesService.findOne(+id);
-  }
+    @Public() // <- add this for testing
+    @Get(':id')
+    findOne(@Param('id') id: string) {
+        return this.machinesService.findOne(+id);
+    }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateMachineDto: UpdateMachineDto) {
-    return this.machinesService.update(+id, updateMachineDto);
-  }
+    @Public() // <- add this for testing
+    @Patch(':id')
+    update(@Param('id') id: string, @Body() updateMachineDto: UpdateMachineDto) {
+        return this.machinesService.update(+id, updateMachineDto);
+    }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.machinesService.remove(+id);
-  }
+    @Public() // <- add this for testing
+    @Delete(':id')
+    remove(@Param('id') id: string) {
+        return this.machinesService.remove(+id);
+    }
 }

@@ -14,17 +14,17 @@ import {
 @Entity({ name: 'user' })
 @TableInheritance({ column: 'role' })
 export class User extends BaseEntity {
-  @PrimaryGeneratedColumn('uuid')
-  user_id: string;
-  
-  @Column()
-  user_name: string;
-  
-  @Column({select: false})
-  password: string;
-  
-  @Column({nullable: true})
-  isMale: boolean;
+    @PrimaryGeneratedColumn('uuid')
+    user_id: string;
+
+    @Column()
+    user_name: string;
+
+    @Column()
+    password: string;
+
+    @Column({ nullable: true })
+    isMale: boolean;
 
     @Column({ nullable: true })
     date_of_birth: Date;

@@ -1,24 +1,23 @@
-
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Machine {
     @PrimaryGeneratedColumn()
-    id: number
+    id: number;
 
     @Column()
-    name: string
+    name: string;
 
     @Column()
-    vendor: string
+    vendor: string;
 
     @Column()
-    status: string
-    
-    @Column()
-    description: string
+    status: string;
 
-    constructor( mach: Partial<Machine>) {
-        Object.assign( this, mach )
+    @Column()
+    description: string;
+
+    constructor(mach: Partial<Machine>) {
+        Object.assign(this, mach);
     }
 }

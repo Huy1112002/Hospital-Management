@@ -1,15 +1,20 @@
-import { IsOptional, IsNotEmpty } from "class-validator"
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsOptional } from 'class-validator';
 
 export class CreateMachineDto {
+    @ApiProperty()
     @IsNotEmpty()
-    name: string
+    name: string;
 
+    @ApiProperty()
     @IsNotEmpty()
-    vendor: string
+    vendor: string;
 
+    @ApiProperty()
     @IsNotEmpty()
-    status: string
-    //optional
+    status: string;
+
+    @ApiProperty()
     @IsOptional()
-    description: string = ''
+    description: string;
 }

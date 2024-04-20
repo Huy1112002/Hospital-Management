@@ -4,4 +4,4 @@ dist
 .env.example
 .prettierrc
 .vscode
-MockClient
+FakeClient

@@ -1,7 +1,15 @@
+import { IsOptional } from "class-validator"
 
 export class UpdateMachineDto {
-    name?: string
-    vendor?:string
-    status?: string
-    description?: string
+    @IsOptional()
+    name: string
+
+    @IsOptional()
+    vendor:string
+
+    @IsOptional()
+    status: string
+
+    @IsOptional()
+    description: string
 }

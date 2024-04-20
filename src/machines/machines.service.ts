@@ -16,7 +16,7 @@ export class MachinesService {
   async create(createMachineDto: CreateMachineDto) {
     const mach = new Machine( createMachineDto )
     await this.entityManager.save(mach)
-    return 'New machine added';
+    return { message: 'New machine added' }
   }
 
   async findAll() {
@@ -24,11 +24,16 @@ export class MachinesService {
   }
 
   async findOne(id: number) {
-    return await this.machineRepo.findOneBy( { id } )
+    const mach = await this.machineRepo.findOneBy( { id } )
+
+    return mach ? mach : { message: `Machine ${id} not found` }
   }
 
   async update(id: number, updateMachineDto: UpdateMachineDto) {
     const mach = await this.machineRepo.findOneBy( { id } )
+
+    if( !mach ) return { message: `Machine ${id} not found` }
+
     if( updateMachineDto.name ) mach.name = updateMachineDto.name
     if( updateMachineDto.vendor ) mach.vendor = updateMachineDto.vendor
     if( updateMachineDto.description ) mach.description = updateMachineDto.description
@@ -36,11 +41,15 @@ export class MachinesService {
 
     await this.entityManager.save( mach )
 
-    return `Machine ${id} updated`;
+    return { message: `Machine ${id} updated` }
   }
 
   async remove(id: number) {
+    const mach = await this.machineRepo.findOneBy( { id } )
+
+    if( !mach ) return { message: `Machine ${id} not found` }
+
     await this.machineRepo.delete({ id })
-    return `Machine ${id} removed`;
+    return { message: `Machine ${id} removed` }
   }
 }

@@ -1,4 +1,9 @@
-import { ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+    ForbiddenException,
+    Injectable,
+    NotFoundException,
+    UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UsersService } from 'src/users/users.service';
@@ -14,10 +19,10 @@ export class AuthService {
 
     constructor(
         private usersService: UsersService,
-        private jwtService: JwtService
+        private jwtService: JwtService,
     ) {}
 
-    async signIn(SigninDto: SigninDto): Promise<{user: User, tokens: Tokens}> {
+    async signIn(SigninDto: SigninDto): Promise<{ user: User; tokens: Tokens }> {
         const user = await this.usersService.findOneByEmailWithPassword(SigninDto.email);
         if (!user) throw new NotFoundException('User not found');
 
@@ -27,7 +32,7 @@ export class AuthService {
 
         const tokens = await this.getTokens(user.user_id, user.email, user.role);
         await this.updateRtHash(user.user_id, tokens.refresh_token);
-        return {user, tokens};
+        return { user, tokens };
     }
 
     async signUp(createUserDto: CreateUserDto): Promise<any> {
@@ -41,8 +46,8 @@ export class AuthService {
 
         const tokens = await this.getTokens(newUser.user_id, newUser.email, newUser.role);
         await this.updateRtHash(newUser.user_id, tokens.refresh_token);
- 
-        return {user: newUser, tokens};
+
+        return { user: newUser, tokens };
     }
 
     async logout(userId: string): Promise<boolean> {
@@ -52,10 +57,10 @@ export class AuthService {
 
     async refreshTokens(userId: string, rt: string): Promise<Tokens> {
         const user = await this.usersService.findOneByIdWithToken(userId);
-        if(!user || !user.hasedRt) throw new ForbiddenException('Access Denied');
+        if (!user || !user.hasedRt) throw new ForbiddenException('Access Denied');
 
         const check = await bcrypt.compare(rt, user.hasedRt);
-        if(!check) throw new ForbiddenException('Access Denied');
+        if (!check) throw new ForbiddenException('Access Denied');
 
         const tokens = await this.getTokens(user.user_id, user.email, user.role);
         await this.updateRtHash(user.user_id, tokens.refresh_token);
@@ -64,7 +69,7 @@ export class AuthService {
     }
 
     async updateRtHash(userId: string, rt: string): Promise<void> {
-        if(!rt) {
+        if (!rt) {
             await this.usersService.updateRtHash(userId, rt);
             return;
         }
@@ -88,8 +93,8 @@ export class AuthService {
             this.jwtService.signAsync(jwtPayload, {
                 secret: 'RT_SECRET',
                 expiresIn: '90d',
-            })
-        ])
+            }),
+        ]);
 
         return {
             access_token: at,

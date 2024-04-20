@@ -1,8 +1,7 @@
-import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { CreateAppointmentDto } from './create-appointment.dto';
-import { IsString } from 'class-validator';
+import { ApiProperty } from "@nestjs/swagger";
+import { IsString, IsUUID } from "class-validator";
 
-export class UpdateAppointmentDto {
+export class CreateExamninationDto {
     @ApiProperty()
     @IsString()
     disease: string;
@@ -18,4 +17,8 @@ export class UpdateAppointmentDto {
     @ApiProperty()
     @IsString()
     description: string;
+
+    @ApiProperty()
+    @IsUUID()
+    doctor_id: string;
 }

@@ -3,6 +3,7 @@ import { Module, ValidationPipe } from "@nestjs/common"
 import { ConfigModule, ConfigService } from "@nestjs/config"
 import { APP_GUARD, APP_PIPE } from "@nestjs/core"
 import { TypeOrmModule } from "@nestjs/typeorm"
+
 import { AppController } from "./app.controller"
 import { AppService } from "./app.service"
 import { AtGuard } from "./common/guards/at.guard"
@@ -10,7 +11,9 @@ import { RolesGuard } from "./common/guards/role.guard"
 import { AppConfig, DatabaseConfig } from "./config"
 import { AuthModule } from "./auth/auth.module"
 import { UsersModule } from "./users/users.module"
-import { AppointmentsModule } from './appointments/appointments.module';
+import { ExamninationsModule } from './examninations/examninations.module';
+import { MachinesModule } from './machines/machines.module';
+import { MedicineModule } from './medicine/medicine.module';
 
 @Module({
 	imports: [
@@ -29,7 +32,9 @@ import { AppointmentsModule } from './appointments/appointments.module';
 		}),
 		AuthModule,
 		UsersModule,
-		AppointmentsModule,
+		ExamninationsModule,
+		MachinesModule,
+		MedicineModule,
 	],
 	controllers: [AppController],
 	providers: [

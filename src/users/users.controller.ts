@@ -13,22 +13,18 @@ export class UsersController {
     constructor(private readonly usersService: UsersService) { }
 
     @UserRoles(Role.Admin)
-    @HttpCode(HttpStatus.CREATED)
     @Post()
     create(@Body() createUserDto: CreateUserDto) {
       return this.usersService.create(createUserDto);
     }
 
     @UserRoles(Role.Admin)
-    @HttpCode(HttpStatus.OK)
     @Get()
-    @ApiOkResponse({ description: 'List all user' })
     findAll() {
       return this.usersService.findAll();
     }
 
     @Get('profile')
-    @HttpCode(HttpStatus.FOUND)
     getProfile(@GetCurrentUserId() id: string) {
       try {
         this.usersService.findOneById(id);
@@ -37,10 +33,20 @@ export class UsersController {
       }
     }
 
-    @Post('search')
-    @HttpCode(HttpStatus.FOUND)
-    search(@Query('query') query: string) {
-      var search = this.usersService.queryUser(query);
+    @UserRoles(Role.Admin)
+    @Get('search')
+    search(
+      @Query('query') query: string,
+      @Query('role') role: Role
+    ) {
+      var search = this.usersService.queryUser(query, role);
       return search;
     }
+
+    @UserRoles(Role.Patient)
+    @Get('doctor')
+    getAllDoctor() {
+      return this.usersService.getAllDoctor();
+    }
+
 }

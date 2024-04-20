@@ -4,6 +4,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
+import { Role } from 'src/common/enums/role.enum';
 
 @Injectable()
 export class UsersService {
@@ -20,7 +21,8 @@ export class UsersService {
   }
 
   findOneById(user_id: string): Promise<User | null> {
-    return this.usersRepository.findOneBy({ user_id });
+    console.log(user_id);
+    return this.usersRepository.findOneBy({ user_id: user_id });
   }
 
   findOneByIdWithToken(user_id: string): Promise<User | null> {
@@ -52,12 +54,21 @@ export class UsersService {
     return this.usersRepository.findOneBy({ phone });
   }
 
-  async queryUser(query: string): Promise<User | null> {
+  async queryUser(query: string, role: Role): Promise<User | null> {
     return await this.usersRepository.findOne({
       where: [
-        { email: query },
-        { phone: query },
-        { CID: query },
+        { 
+          email: query ,
+          role: role,
+        },
+        { 
+          phone: query, 
+          role: role,
+        },
+        { 
+          CID: query,
+          role: role,
+        },
       ],
     });
   }
@@ -72,5 +83,13 @@ export class UsersService {
 
   async remove(user_id: string): Promise<void> {
     await this.usersRepository.delete(user_id);
+  }
+
+  async getAllDoctor() {
+    return await this.usersRepository.findBy({role: Role.Doctor})
+  }
+a
+  async getAllNurse() {
+    return await this.usersRepository.findBy({role: Role.Nurse})
   }
 }

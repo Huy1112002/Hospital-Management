@@ -10,12 +10,13 @@ import { Role } from 'src/common/enums/role.enum';
 
 @Controller('auth')
 export class AuthController {
-    constructor(private authService: AuthService) {}
+
+    constructor(private authService: AuthService) { }
 
     @Public()
     @HttpCode(HttpStatus.OK)
     @Post('signin')
-    async signin(@Body() SigninDto: SigninDto): Promise<{ user: User; tokens: Tokens }> {
+    async signin(@Body() SigninDto: SigninDto): Promise<{ user: User, tokens: Tokens }> {
         try {
             const result = await this.authService.signIn(SigninDto);
             return result;
@@ -27,7 +28,7 @@ export class AuthController {
     @Public()
     @HttpCode(HttpStatus.CREATED)
     @Post('signup')
-    async signup(@Body() CreateUserDto: CreateUserDto): Promise<{ user: User; tokens: Tokens }> {
+    async signup(@Body() CreateUserDto: CreateUserDto): Promise<{ user: User, tokens: Tokens }> {
         try {
             CreateUserDto.role = Role.Patient;
             const result = await this.authService.signUp(CreateUserDto);
@@ -42,7 +43,7 @@ export class AuthController {
     async logout(@GetCurrentUserId() userId: string): Promise<any> {
         try {
             await this.authService.logout(userId);
-            return { msg: 'Logout successfull!' };
+            return { msg: "Logout successfull!" };
         } catch (err: unknown) {
             throw err;
         }
@@ -51,14 +52,14 @@ export class AuthController {
     @Public()
     @Post('forgot-password')
     forgot_password() {
-        return 'this action forget password';
+        return "this action forget password";
     }
 
     @HttpCode(HttpStatus.OK)
     @Post('refresh-token')
     refresh_token(
         @GetCurrentUserId() userId: string,
-        @Headers('refreshToken') refreshToken: string,
+        @Headers('refreshToken') refreshToken: string
     ): Promise<Tokens> {
         try {
             return this.authService.refreshTokens(userId, refreshToken);

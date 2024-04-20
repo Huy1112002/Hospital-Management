@@ -1,7 +1,3 @@
 node_modules
 dist
 .env.development
-.env.example
-.prettierrc
-.vscode
-MockClient

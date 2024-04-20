@@ -1,4 +1,4 @@
-import "reflect-metadata";
+import 'reflect-metadata';
 import { ChildEntity, OneToMany } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { Role } from "src/common/enums/role.enum";

@@ -12,6 +12,8 @@ import { AppConfig, DatabaseConfig } from "./config"
 import { AuthModule } from "./auth/auth.module"
 import { UsersModule } from "./users/users.module"
 import { AppointmentsModule } from './appointments/appointments.module';
+import { MachinesModule } from './machines/machines.module';
+import { MedicineModule } from './medicine/medicine.module';
 
 @Module({
 	imports: [
@@ -31,6 +33,8 @@ import { AppointmentsModule } from './appointments/appointments.module';
 		AuthModule,
 		UsersModule,
 		AppointmentsModule,
+		MachinesModule,
+		MedicineModule,
 	],
 	controllers: [AppController],
 	providers: [

@@ -1,6 +1,6 @@
-  import "reflect-metadata";
-import { Role } from "src/common/enums/role.enum";
-  import {
+import 'reflect-metadata';
+import { Role } from 'src/common/enums/role.enum';
+import {
     BaseEntity,
     Column,
     Entity,
@@ -9,11 +9,10 @@ import { Role } from "src/common/enums/role.enum";
     DeleteDateColumn,
     UpdateDateColumn,
     TableInheritance,
-    OneToMany,
 } from 'typeorm';
-  
+
 @Entity({ name: 'user' })
-@TableInheritance({column: 'role'})
+@TableInheritance({ column: 'role' })
 export class User extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   user_id: string;
@@ -27,30 +26,30 @@ export class User extends BaseEntity {
   @Column({nullable: true})
   isMale: boolean;
 
-  @Column({nullable: true})
-  date_of_birth: Date;
+    @Column({ nullable: true })
+    date_of_birth: Date;
 
-  @Column({nullable: true})
-  phone: string;
+    @Column({ nullable: true })
+    phone: string;
 
-  @Column({nullable: true, unique: true})
-  email: string;
+    @Column({ nullable: true, unique: true })
+    email: string;
 
-  @Column({nullable: true, unique: true})
-  CID: string;
+    @Column({ nullable: true, unique: true })
+    CID: string;
 
-  @Column({nullable: false})
-  role: Role;
+    @Column({ nullable: false })
+    role: Role;
 
-  @CreateDateColumn()
-  createdAt: Date;
+    @CreateDateColumn()
+    createdAt: Date;
 
-  @UpdateDateColumn()
-  updatedAt: Date;
+    @UpdateDateColumn()
+    updatedAt: Date;
 
-  @DeleteDateColumn()
-  deletedAt?: Date | null;
+    @DeleteDateColumn()
+    deletedAt?: Date | null;
 
-  @Column({nullable: true, select: false})
-  hasedRt: string;
+    @Column({ nullable: true, select: false })
+    hasedRt: string;
 }

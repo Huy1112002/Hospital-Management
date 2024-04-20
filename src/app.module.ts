@@ -3,7 +3,6 @@ import { Module, ValidationPipe } from "@nestjs/common"
 import { ConfigModule, ConfigService } from "@nestjs/config"
 import { APP_GUARD, APP_PIPE } from "@nestjs/core"
 import { TypeOrmModule } from "@nestjs/typeorm"
-
 import { AppController } from "./app.controller"
 import { AppService } from "./app.service"
 import { AtGuard } from "./common/guards/at.guard"

@@ -1,67 +1,62 @@
+function setExpire(now, day_offset = 0) {
+    const round = Math.floor(now.getTime() / (1000 * 60 * 60 * 24)) * (1000 * 60 * 60 * 24);
+    return new Date(round + day_offset * (1000 * 60 * 60 * 24));
+}
+
+const now = new Date();
+
 const batch = {
     status: 'success',
-    placer_name: 'Nguyen Van A',
-    placer_CID: '404',
-    placer_phone: '0999999990',
-    import_date: new Date(),
+    placer_name: 'Nguyễn Văn ABCD',
+    placer_CID: '404 Not Found',
+    placer_phone: '0978123456',
+    import_date: setExpire(now),
     medicines: [
         {
-            medicine_id: 'T1',
-            quantity: 10,
-            costIn: 70,
-            expire: new Date(),
+            medicine_id: 'T2',
+            quantity: 150,
+            cost_in: 220,
+            expire: setExpire(now, 60),
+            vendor: 'VN',
+        },
+        {
+            medicine_id: 'T3',
+            quantity: 200,
+            cost_in: 10,
+            expire: setExpire(now, 365),
             vendor: 'USA',
         },
         {
             medicine_id: 'T2',
-            quantity: 10,
-            costIn: 90,
-            expire: new Date(),
-            vendor: 'CHINA',
-        },
-        {
-            medicine_id: 'T1',
-            quantity: 15,
-            costIn: 60,
-            expire: new Date(),
-            vendor: 'USA',
-        },
-        {
-            medicine_id: 'T3',
-            quantity: 30,
-            costIn: 200,
-            expire: new Date(),
-            vendor: 'VN',
-        },
-        {
-            medicine_id: 'T4',
-            quantity: 30,
-            costIn: 200,
-            expire: new Date(),
-            vendor: 'VN',
+            quantity: 150,
+            cost_in: 250,
+            expire: setExpire(now, 60),
+            vendor: 'JAPAN',
         },
     ],
-    description: 'da kiem tra',
+    description: 'Đã kiểm tra',
 };
 
-const amount = { amount: 200 };
+const amount = { amount: 50 };
 
-const newCost = { cost: 166 };
+const newCost = { cost: 450 };
 
 const medicine = {
-    medicine_id: 'T2',
-    costOut: 50,
-    name: 'Vitamin B',
+    medicine_id: 'T5',
+    cost_out: 350,
+    name: 'Vitamin E',
     unit: 'ml',
-    ingredients: ["I don't know B"],
+    ingredients: ['Tocopherol', 'Tocotrienol'],
+    description:
+        'Vitamin E là một thành phần quan trọng giúp duy trì hoạt động bình thường của các cơ quan trong cơ thể là một chất chống oxy hóa giúp làm chậm các quá trình gây tổn thương tế bào.',
 };
 
-fetch('http://localhost:3000/medicine/use/T3', {
+fetch('http://localhost:3000/medicine/cost/T4', {
     method: 'PATCH',
     headers: {
         'Content-Type': 'application/json',
     },
-    body: JSON.stringify(amount),
+    body: JSON.stringify(newCost),
 })
     .then((response) => response.json())
     .then((data) => {

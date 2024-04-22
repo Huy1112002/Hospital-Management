@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query, HttpCode, Htt
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiOkResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse } from '@nestjs/swagger';
 import { GetCurrentUserId } from 'src/common/decorators/get-current-user-id.decorator';
 import { UserRoles } from 'src/common/decorators/roles.decorator';
 import { Role } from 'src/common/enums/role.enum';
@@ -13,17 +13,20 @@ export class UsersController {
     constructor(private readonly usersService: UsersService) { }
 
     @UserRoles(Role.Admin)
+    @ApiBearerAuth()
     @Post()
     create(@Body() createUserDto: CreateUserDto) {
-      return this.usersService.create(createUserDto);
+      return this.usersService.createUser(createUserDto);
     }
 
     @UserRoles(Role.Admin)
+    @ApiBearerAuth()
     @Get()
     findAll() {
       return this.usersService.findAll();
     }
 
+    @ApiBearerAuth()
     @Get('profile')
     getProfile(@GetCurrentUserId() id: string) {
       try {
@@ -34,6 +37,7 @@ export class UsersController {
     }
 
     @UserRoles(Role.Admin)
+    @ApiBearerAuth()
     @Get('search')
     search(
       @Query('query') query: string,
@@ -44,6 +48,7 @@ export class UsersController {
     }
 
     @UserRoles(Role.Patient)
+    @ApiBearerAuth()
     @Get('doctor')
     getAllDoctor() {
       return this.usersService.getAllDoctor();

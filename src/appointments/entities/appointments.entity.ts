@@ -14,23 +14,26 @@ export class Appointment {
     @PrimaryGeneratedColumn()
     id: string;
 
-    @Column()
+    @Column({nullable: true})
     disease: string;
 
-    @Column()
+    @Column({nullable: true})
     level: string;
 
-    @Column()
+    @Column({nullable: true})
     underlyingDisease: string;
 
-    @Column()
+    @Column({nullable: true})
     description: string;
 
-    @Column()
+    @Column({nullable: true})
     advice: string;
 
     @Column()
     date: string;
+
+    @Column({nullable: true})
+    medicineList: string;
 
     @Column({type: 'enum', enum: AppointmentStatus, default: AppointmentStatus.CREATED})
     status: AppointmentStatus;

@@ -1,5 +1,7 @@
 import {
     ForbiddenException,
+    forwardRef,
+    Inject,
     Injectable,
     NotFoundException,
     UnauthorizedException,
@@ -18,6 +20,7 @@ export class AuthService {
     private saltOrRounds = 10;
 
     constructor(
+        @Inject(forwardRef(() => UsersService))
         private usersService: UsersService,
         private jwtService: JwtService,
     ) {}
@@ -88,7 +91,7 @@ export class AuthService {
         const [at, rt] = await Promise.all([
             this.jwtService.signAsync(jwtPayload, {
                 secret: 'AT_SECRET',
-                expiresIn: '1h',
+                expiresIn: '24h',
             }),
             this.jwtService.signAsync(jwtPayload, {
                 secret: 'RT_SECRET',

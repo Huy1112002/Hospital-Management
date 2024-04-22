@@ -8,21 +8,35 @@ import { Role } from 'src/common/enums/role.enum';
 import { UserRoles } from 'src/common/decorators/roles.decorator';
 import { AppointmentStatus } from './entities/appointments.entity';
 import { User } from 'src/users/entities/user.entity';
+import { Public } from 'src/common/decorators/auth.decorator';
+import { CreateFirstAppointment } from './dto/create-first-dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('appointments')
 export class AppointmentsController {
   constructor(private readonly examninationsService: AppointmentsService) {}
 
-  @Post()
   @UserRoles(Role.Patient)
+  @ApiBearerAuth()
+  @Post()
   create(
     @GetCurrentUserId() user_id: string, 
-    @Query('doctor-id') doctor_id: string, 
+    @Query('doctor_id') doctor_id: string, 
     @Body() createAppointmentDto: CreateAppointmentDto
   ) {
     return this.examninationsService.create(user_id, doctor_id, createAppointmentDto);
   }
 
+  @Post('/first_register')
+  @Public()
+  createFirstRegister(
+    @Body() createFirstRegister: CreateFirstAppointment,
+  ) {
+    return this.examninationsService.createFirstTime(createFirstRegister);
+  }
+
+  @ApiBearerAuth()
+  @UserRoles(Role.Admin)
   @Get()
   findAll(
     @GetCurrentUserId() user_id: string, 
@@ -32,6 +46,14 @@ export class AppointmentsController {
     return this.examninationsService.findAll(user_id, role, src);
   }
 
+  @Get('/schedule')
+  getSchedule(
+    @Query('doctor_id') doctor_id: string,
+  ) {
+    return this.examninationsService.getSchedule(doctor_id);
+  }
+
+  @ApiBearerAuth()
   @Get(':id')
   findOne(
     @GetCurrentUserId() user_id: string, 
@@ -42,7 +64,8 @@ export class AppointmentsController {
   }
 
   @UserRoles(Role.Admin)
-  @Patch(':id')
+  @ApiBearerAuth()
+  @Patch(':id/cancle')
   remove(
     @Param('id') id: string
   ) {
@@ -50,19 +73,13 @@ export class AppointmentsController {
   }
 
   @UserRoles(Role.Doctor)
-  @Patch(':id/advice')
+  @ApiBearerAuth()
+  @Patch(':id/done')
   advice(
     @GetCurrentUserId() user_id: string, 
     @Param('id') id: string, 
     @Body() updateAppointmentDto: UpdateAppointmentDto,
   ) {
     return this.examninationsService.update(user_id, id, updateAppointmentDto);
-  }
-
-  @Get('schedule/:doctor-id')
-  getSchedule(
-    @Param('doctor-id') doctor_id: string,
-  ) {
-    return this.examninationsService.getSchedule(doctor_id)
   }
 }

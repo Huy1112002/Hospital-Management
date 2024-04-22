@@ -29,7 +29,6 @@ export class AuthController {
     @Post('signup')
     async signup(@Body() CreateUserDto: CreateUserDto): Promise<{ user: User; tokens: Tokens }> {
         try {
-            CreateUserDto.role = Role.Patient;
             const result = await this.authService.signUp(CreateUserDto);
             return result;
         } catch (err: unknown) {

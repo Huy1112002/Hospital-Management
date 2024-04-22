@@ -1,55 +1,78 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, TreeLevelColumn } from 'typeorm';
 import { User } from './entities/user.entity';
 import { Role } from 'src/common/enums/role.enum';
+import { AuthService } from 'src/auth/auth.service';
 
 @Injectable()
 export class UsersService {
-    constructor(@InjectRepository(User) private usersRepository: Repository<User>) {}
+  constructor(
+    @InjectRepository(User) 
+    private usersRepository: Repository<User>,
+    @Inject(forwardRef(() => AuthService))
+    private authService: AuthService,
+  ) {}
+  
 
-    create(createUserDto: CreateUserDto) {
-        return this.usersRepository.save(createUserDto);
-    }
-
-    findAll(): Promise<User[]> {
-        return this.usersRepository.find();
-    }
-
-  findOneById(user_id: string): Promise<User | null> {
-    console.log(user_id);
-    return this.usersRepository.findOneBy({ user_id: user_id });
+  create(createUserDto: CreateUserDto) {
+      return this.usersRepository.save(createUserDto);
   }
 
-    findOneByIdWithToken(user_id: string): Promise<User | null> {
-        return this.usersRepository
-            .createQueryBuilder('user')
-            .where('user.email = :user_id', { user_id })
-            .addSelect('user.hasedRT')
-            .getOne();
-    }
+  createUser(createUserDto: CreateUserDto) {
+    return this.authService.signUp(createUserDto)
+  }
 
-    findOneByEmail(email: string): Promise<User | null> {
-        return this.usersRepository.findOneBy({ email });
-    }
+  findAll(): Promise<User[]> {
+      return this.usersRepository.find();
+  }
 
-    findOneByEmailWithPassword(email: string): Promise<User | null> {
-        return this.usersRepository
-            .createQueryBuilder('user')
-            .where('user.email = :email', { email })
-            .addSelect('user.password')
-            .getOne();
-    }
+  async findOneById(user_id: string): Promise<any> {
+    return await this.usersRepository.find(
+      {
+        select: {
+          user_id: true,
+          user_name: true,
+          date_of_birth: true,
+          CID: true,
+          isMale: true,
+        },
+        where: {
+          user_id: user_id 
+        }
+      }
+    );
+  }
 
-    findOneByCID(CID: string): Promise<User | null> {
-        return this.usersRepository.findOneBy({ CID });
-    }
+  findOneByIdWithToken(user_id: string): Promise<User | null> {
+      return this.usersRepository
+          .createQueryBuilder('user')
+          .where('user.email = :user_id', { user_id })
+          .addSelect('user.hasedRT')
+          .getOne();
+  }
 
-    findOneByPhone(phone: string): Promise<User | null> {
-        return this.usersRepository.findOneBy({ phone });
-    }
+  findOneByEmail(email: string): Promise<User | null> {
+      return this.usersRepository.findOneBy({ email });
+  }
+
+  findOneByEmailWithPassword(email: string): Promise<User | null> {
+      return this.usersRepository
+          .createQueryBuilder('user')
+          .where('user.email = :email', { email })
+          .addSelect('user.password')
+          .getOne();
+  }
+
+  findOneByCID(CID: string): Promise<User | null> {
+      return this.usersRepository.findOneBy({ CID });
+  }
+
+  findOneByPhone(phone: string): Promise<User | null> {
+      return this.usersRepository.findOneBy({ phone });
+  }
 
   async queryUser(query: string, role: Role): Promise<User | null> {
     return await this.usersRepository.findOne({
@@ -70,13 +93,13 @@ export class UsersService {
     });
   }
 
-    async update(id: string, updateUserDto: UpdateUserDto): Promise<void> {
-        await this.usersRepository.update(id, updateUserDto);
-    }
+  async update(id: string, updateUserDto: UpdateUserDto): Promise<void> {
+      await this.usersRepository.update(id, updateUserDto);
+  }
 
-    async updateRtHash(id: string, hasedRt: string) {
-        await this.usersRepository.update(id, { hasedRt });
-    }
+  async updateRtHash(id: string, hasedRt: string) {
+      await this.usersRepository.update(id, { hasedRt });
+  }
 
   async remove(user_id: string): Promise<void> {
     await this.usersRepository.delete(user_id);
@@ -89,4 +112,5 @@ a
   async getAllNurse() {
     return await this.usersRepository.findBy({role: Role.Nurse})
   }
+
 }

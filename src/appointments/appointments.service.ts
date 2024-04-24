@@ -1,19 +1,31 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AppointmentStatus, Appointment } from './entities/appointments.entity';
-import { Repository, TreeLevelColumn } from 'typeorm';
+import { MoreThan, MoreThanOrEqual, Not, Repository, TreeLevelColumn } from 'typeorm';
 import { Role } from 'src/common/enums/role.enum';
 import { UsersService } from 'src/users/users.service';
 import { getRandomElement } from 'src/common/ultils/get_random';
+import { CreateFirstAppointment } from './dto/create-first-dto';
+import { AuthService } from 'src/auth/auth.service';
+import { User } from 'src/users/entities/user.entity';
+import { Patient } from 'src/users/entities/patient.entity';
+import { Doctor } from 'src/users/entities/doctor.entity';
+import { MedicineService } from 'src/medicine/medicine.service';
+import { NotEquals } from 'class-validator';
+import { elementAt } from 'rxjs';
 
 @Injectable()
 export class AppointmentsService {
   constructor(
     @InjectRepository(Appointment)
     private examinationRepository: Repository<Appointment>,
+    @InjectRepository(Doctor)
+    private doctorRepository: Repository<Doctor>,
     private userService: UsersService,
+    private authService: AuthService,
+    private medicineService: MedicineService,
   )
   {}
 
@@ -24,20 +36,57 @@ export class AppointmentsService {
   ): Promise<any> {
     const checkExits: boolean = await this.examinationRepository.existsBy({
       patient: {user_id: patient_id},
-      doctor: {user_id: doctor_id},
       date: createExamninationDto.date,
     });
-    if(checkExits == true)return new BadRequestException('Examinations is exits in this date!');
+    if(checkExits) return new BadRequestException('Examinations is exits in this date!');
 
     const nurseList = await this.userService.getAllNurse();
     const nurse = getRandomElement(nurseList)
 
     return this.examinationRepository
-      .create({
+      .save({
         ...createExamninationDto,
         doctor: { user_id: doctor_id},
         patient: { user_id: patient_id },
-        nurse: nurse,
+        nurse: {user_id: nurse.user_id},
+      })
+  }
+
+  async createFirstTime(
+    createFirstRegister: CreateFirstAppointment,
+  ) {
+    let patient: User;
+    try {
+      patient = await this.userService.queryUser(createFirstRegister.email, createFirstRegister.role);
+      if(patient == null) {
+        patient = await this.authService.signUp(createFirstRegister);
+      }
+    } catch (err: any) {
+      console.log(err)
+    }
+
+    const checkExits: boolean = await this.examinationRepository.existsBy({
+      patient: {user_id: patient.user_id},
+      date: createFirstRegister.date,
+    });
+    if(checkExits) return new BadRequestException('Examinations is exits in this date!');
+    
+    const doctorList = await this.doctorRepository.findBy({
+      appointments: {
+        date: Not(createFirstRegister.date)
+      }
+    });
+    const doctor = getRandomElement(doctorList)
+
+    const nurseList = await this.userService.getAllNurse()
+    const nurse = getRandomElement(nurseList)
+
+    return this.examinationRepository
+      .save({
+        ...createFirstRegister,
+        doctor: {user_id: doctor.user_id},
+        patient: patient,
+        nurse: {user_id: nurse.user_id},
       })
   }
 
@@ -52,6 +101,7 @@ export class AppointmentsService {
             underlyingDisease: true,
             description: true,
             advice: true,
+            date: true,
             patient: {
               user_id: true,
               user_name: true,
@@ -79,6 +129,7 @@ export class AppointmentsService {
             underlyingDisease: true,
             description: true,
             advice: true,
+            date: true,
             doctor: {
               user_id: true,
               user_name: true,
@@ -106,6 +157,7 @@ export class AppointmentsService {
             underlyingDisease: true,
             description: true,
             advice: true,
+            date: true,
             patient: {
               user_id: true,
               user_name: true,
@@ -157,29 +209,54 @@ export class AppointmentsService {
     return this.examinationRepository.update(id, {status: AppointmentStatus.CANCEL});
   }
 
-  update(
+  async update(
     doctor_id: string, 
     appointment_id: string, 
     updateAppointmentDto: UpdateAppointmentDto
   ): Promise<any> {
-    return this.examinationRepository.update(
-      {
-        doctor: {user_id: doctor_id},
-        id: appointment_id,
-      },
-      {
-        ...updateAppointmentDto,
-        status: AppointmentStatus.DONE,
+    try {
+      const doctor = await this.userService.findOneById(doctor_id);
+      if(!doctor) throw new NotFoundException("Doctor is not exits!"); 
+
+      var medicinesList = updateAppointmentDto.medicinesList
+      if(updateAppointmentDto.medicinesList) {
+        delete updateAppointmentDto.medicinesList;
       }
-    )
+
+      const appointment = this.examinationRepository.update(
+        {
+          doctor: {user_id: doctor_id},
+          id: appointment_id,
+        },
+        {
+          ...updateAppointmentDto,
+          status: AppointmentStatus.DONE,
+        })
+
+      const medicine = medicinesList.forEach(medicine => {
+        try {
+          this.medicineService.useMedicine(medicine.medicine_id, medicine.amount)
+        } catch (err: any) {
+          return err;
+        }
+      })
+
+      return appointment;
+    } catch (err: any) {
+      return err;
+    }
   }
 
-  getSchedule (
+  async getSchedule (
     doctor_id: string,
   ) {
-    return this.examinationRepository.find({
+    const doctor = await this.userService.findOneById(doctor_id);
+    if (doctor == null) return new NotFoundException("Doctor is not exits!");
+    
+    return await this.examinationRepository.find({
       select: {
         date: true,
+        id: true,
       },
       where: {
         doctor: {

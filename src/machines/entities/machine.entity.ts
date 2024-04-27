@@ -1,4 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { State } from '../../common/enums/machine.enum';
+import { Tag } from '../../tag/entities/tag.entity';
 
 @Entity()
 export class Machine {
@@ -12,10 +14,14 @@ export class Machine {
     vendor: string;
 
     @Column()
-    status: string;
+    status: State;
 
     @Column()
-    description: string;
+    description: string = '';
+
+    @ManyToMany(() => Tag, (tag) => tag.machines, { cascade: true } )
+    @JoinTable()
+    tags: Tag[]
 
     constructor(mach: Partial<Machine>) {
         Object.assign(this, mach);

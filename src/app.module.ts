@@ -13,6 +13,7 @@ import { UsersModule } from "./users/users.module"
 import { AppointmentsModule } from './appointments/appointments.module';
 import { MachinesModule } from './machines/machines.module';
 import { MedicineModule } from './medicine/medicine.module';
+import { TagModule } from './tag/tag.module';
 
 @Module({
 	imports: [
@@ -34,6 +35,7 @@ import { MedicineModule } from './medicine/medicine.module';
 		AppointmentsModule,
 		MachinesModule,
 		MedicineModule,
+		TagModule,
 	],
 	controllers: [AppController],
 	providers: [

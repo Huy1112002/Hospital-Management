@@ -8,6 +8,7 @@ import { Role } from '../common/enums/role.enum';
 
 import { Public } from 'src/common/decorators/auth.decorator';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { State } from '../common/enums/machine.enum';
 
 // @UserRoles(Role.Admin)
 @Controller('machines')
@@ -17,35 +18,50 @@ export class MachinesController {
     @ApiBearerAuth()
     @Public() // <- add this for testing
     @Post()
-    create(@Body() createMachineDto: CreateMachineDto) {
-        return this.machinesService.create(createMachineDto);
+    async create(@Body() createMachineDto: CreateMachineDto) {
+        return await this.machinesService.create(createMachineDto);
     }
 
     @ApiBearerAuth()
     @Public() // <- add this for testing
     @Get()
-    findAll() {
-        return this.machinesService.findAll();
+    async findAll() {
+        return await this.machinesService.findAll();
     }
 
     @ApiBearerAuth()
     @Public() // <- add this for testing
     @Get(':id')
-    findOne(@Param('id') id: string) {
-        return this.machinesService.findOne(+id);
+    async findOne(@Param('id') id: string) {
+        return await this.machinesService.findOne(+id);
     }
 
     @ApiBearerAuth()
     @Public() // <- add this for testing
+    @Get('/find/:state')
+    async findbyState(@Param('state') state: State) {
+        return await this.machinesService.findbyState(state);
+    }
+
+    @ApiBearerAuth()
+    @Public() // <- add this for testing
+    @Get('/findtag/:tag')
+    async findbyTags(@Param('tag') tag: string) {
+        return await this.machinesService.findbyTags(tag);
+    }
+    
+
+    @ApiBearerAuth()
+    @Public() // <- add this for testing
     @Patch(':id')
-    update(@Param('id') id: string, @Body() updateMachineDto: UpdateMachineDto) {
-        return this.machinesService.update(+id, updateMachineDto);
+    async update(@Param('id') id: string, @Body() updateMachineDto: UpdateMachineDto) {
+        return await this.machinesService.update(+id, updateMachineDto);
     }
 
     @ApiBearerAuth()
     @Public() // <- add this for testing
     @Delete(':id')
-    remove(@Param('id') id: string) {
-        return this.machinesService.remove(+id);
+    async remove(@Param('id') id: string) {
+        return await this.machinesService.remove(+id);
     }
 }

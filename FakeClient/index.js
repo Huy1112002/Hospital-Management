@@ -14,7 +14,7 @@ const batch = {
     medicines: [
         {
             medicine_id: 'T2',
-            quantity: 150,
+            quantity: 300,
             cost_in: 220,
             expire: setExpire(now, 60),
             vendor: 'VN',
@@ -23,40 +23,37 @@ const batch = {
             medicine_id: 'T3',
             quantity: 200,
             cost_in: 10,
-            expire: setExpire(now, 365),
-            vendor: 'USA',
-        },
-        {
-            medicine_id: 'T2',
-            quantity: 150,
-            cost_in: 250,
             expire: setExpire(now, 60),
-            vendor: 'JAPAN',
+            vendor: 'USA',
         },
     ],
     description: 'Đã kiểm tra',
 };
 
-const amount = { amount: 50 };
+const amount = { amount: 150 };
 
 const newCost = { cost: 450 };
 
 const medicine = {
-    medicine_id: 'T5',
+    medicine_id: 'T4',
     cost_out: 350,
-    name: 'Vitamin E',
+    name: 'Vitamin B12',
     unit: 'ml',
-    ingredients: ['Tocopherol', 'Tocotrienol'],
+    ingredients: ['C63H90O14PCo'],
     description:
-        'Vitamin E là một thành phần quan trọng giúp duy trì hoạt động bình thường của các cơ quan trong cơ thể là một chất chống oxy hóa giúp làm chậm các quá trình gây tổn thương tế bào.',
+        'Giúp hình thành tế bào hồng cầu và phòng chống thiếu máu. Vitamin B12 đóng một vai trò quan trọng trong việc giúp cơ thể sản xuất các tế bào hồng cầu.',
 };
 
-fetch('http://localhost:3000/medicine/cost/T4', {
-    method: 'PATCH',
+const token =
+    'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5YmM0MWY5NS1mYTlkLTRiNjAtOGYwMy02MTQ4ODdhNDQzNjMiLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJyb2xlIjoicGF0aWVudCIsImlhdCI6MTcxMzY2OTAxMiwiZXhwIjoxNzEzNjcyNjEyfQ.6C-KjQdaALAIOMxUTEanapYm-t4-qSuGKb8UsEfmOOk';
+
+fetch('https://helped-alpaca-obliging.ngrok-free.app/medicine', {
+    method: 'GET',
     headers: {
         'Content-Type': 'application/json',
+        // Authorization: token,
     },
-    body: JSON.stringify(newCost),
+    // body: JSON.stringify(batch),
 })
     .then((response) => response.json())
     .then((data) => {

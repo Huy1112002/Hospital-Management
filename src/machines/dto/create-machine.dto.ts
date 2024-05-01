@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty, IsOptional } from 'class-validator';
 import { State } from '../../common/enums/machine.enum';
-import { TagDto } from '../../tag/dto/tag.dto';
 
 export class CreateMachineDto {
     @ApiProperty()
@@ -20,8 +19,4 @@ export class CreateMachineDto {
     @ApiProperty()
     @IsOptional()
     description: string;
-
-    @ApiProperty()
-    @IsOptional()
-    tags: TagDto[]
 }

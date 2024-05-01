@@ -31,13 +31,6 @@ export class MachinesController {
 
     @ApiBearerAuth()
     @Public() // <- add this for testing
-    @Get(':id')
-    async findOne(@Param('id') id: string) {
-        return await this.machinesService.findOne(+id);
-    }
-
-    @ApiBearerAuth()
-    @Public() // <- add this for testing
     @Get('/find/:state')
     async findbyState(@Param('state') state: State) {
         return await this.machinesService.findbyState(state);
@@ -45,11 +38,10 @@ export class MachinesController {
 
     @ApiBearerAuth()
     @Public() // <- add this for testing
-    @Get('/findtag/:tag')
-    async findbyTags(@Param('tag') tag: string) {
-        return await this.machinesService.findbyTags(tag);
+    @Get(':id')
+    async findOne(@Param('id') id: string) {
+        return await this.machinesService.findOne(+id);
     }
-    
 
     @ApiBearerAuth()
     @Public() // <- add this for testing

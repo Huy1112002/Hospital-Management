@@ -21,7 +21,7 @@ export class CreateMedicineDto {
     @IsNotEmpty()
     cost_out: number;
 
-    @ApiProperty()
+    @ApiProperty({ isArray: true })
     @IsNotEmpty()
     ingredients: object;
 

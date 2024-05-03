@@ -3,7 +3,7 @@ import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AppointmentStatus, Appointment } from './entities/appointments.entity';
-import { MoreThan, MoreThanOrEqual, Not, Repository, TreeLevelColumn } from 'typeorm';
+import { Between, LessThanOrEqual, MoreThan, MoreThanOrEqual, Not, Repository, TreeLevelColumn } from 'typeorm';
 import { Role } from 'src/common/enums/role.enum';
 import { UsersService } from 'src/users/users.service';
 import { getRandomElement } from 'src/common/ultils/get_random';
@@ -15,6 +15,7 @@ import { Doctor } from 'src/users/entities/doctor.entity';
 import { MedicineService } from 'src/medicine/medicine.service';
 import { NotEquals } from 'class-validator';
 import { elementAt } from 'rxjs';
+import { randomInt } from 'crypto';
 
 @Injectable()
 export class AppointmentsService {
@@ -34,22 +35,41 @@ export class AppointmentsService {
     doctor_id: string, 
     createExamninationDto: CreateAppointmentDto
   ): Promise<any> {
-    const checkExits: boolean = await this.examinationRepository.existsBy({
-      patient: {user_id: patient_id},
-      date: createExamninationDto.date,
+    const checkExits: boolean = await this.examinationRepository.exists({
+      where:
+        {
+          patient: {user_id: patient_id},
+          date: createExamninationDto.date,
+          queue_number: Between(createExamninationDto.min_appoinment_number, createExamninationDto.max_appoinment_number),
+        }
     });
-    if(checkExits) return new BadRequestException('Examinations is exits in this date!');
+    if(checkExits) return new BadRequestException('Examinations is exits in this time!');
 
     const nurseList = await this.userService.getAllNurse();
     const nurse = getRandomElement(nurseList)
 
-    return this.examinationRepository
+    const appointment_number: number = createExamninationDto.min_appoinment_number + randomInt(createExamninationDto.max_appoinment_number - createExamninationDto.min_appoinment_number);
+    for(let i = createExamninationDto.min_appoinment_number; i <= createExamninationDto.max_appoinment_number; i++) {
+      const checkValid: boolean = await this.examinationRepository.exists({
+        where: {
+          patient: {user_id: patient_id},
+          doctor: {user_id: doctor_id},
+          date: createExamninationDto.date,
+          queue_number: i,
+        }
+      })
+
+      if(checkValid) continue;
+
+      return await this.examinationRepository
       .save({
-        ...createExamninationDto,
+        date: createExamninationDto.date,
+        queue_number: appointment_number,
         doctor: { user_id: doctor_id},
         patient: { user_id: patient_id },
         nurse: {user_id: nurse.user_id},
       })
+    }
   }
 
   async createFirstTime(
@@ -60,9 +80,11 @@ export class AppointmentsService {
       patient = await this.userService.queryUser(createFirstRegister.email, createFirstRegister.role);
       if(patient == null) {
         patient = await this.authService.signUp(createFirstRegister);
+      } else {
+        throw new BadRequestException("Email is exits! Please register with your account!")
       }
     } catch (err: any) {
-      console.log(err)
+      return err;
     }
 
     const checkExits: boolean = await this.examinationRepository.existsBy({
@@ -81,13 +103,21 @@ export class AppointmentsService {
     const nurseList = await this.userService.getAllNurse()
     const nurse = getRandomElement(nurseList)
 
-    return this.examinationRepository
-      .save({
-        ...createFirstRegister,
-        doctor: {user_id: doctor.user_id},
-        patient: patient,
-        nurse: {user_id: nurse.user_id},
-      })
+    const appointment = this.examinationRepository
+    .save({
+      ...createFirstRegister,
+      doctor: {user_id: doctor.user_id},
+      patient: patient,
+      nurse: {user_id: nurse.user_id},
+    })
+
+    return {
+      appointment, 
+      user: {
+        email: createFirstRegister.email,
+        password: createFirstRegister.password,
+      }
+    }
   }
 
   findAll(user_id: string, user_role: Role, src: AppointmentStatus) {
@@ -102,6 +132,7 @@ export class AppointmentsService {
             description: true,
             advice: true,
             date: true,
+            queue_number: true,
             patient: {
               user_id: true,
               user_name: true,
@@ -130,6 +161,7 @@ export class AppointmentsService {
             description: true,
             advice: true,
             date: true,
+            queue_number: true,
             doctor: {
               user_id: true,
               user_name: true,
@@ -158,6 +190,7 @@ export class AppointmentsService {
             description: true,
             advice: true,
             date: true,
+            queue_number: true,
             patient: {
               user_id: true,
               user_name: true,
@@ -265,5 +298,39 @@ export class AppointmentsService {
         status: AppointmentStatus.CREATED,
       }
     })
+  }
+
+  async findFreeDoctor (
+    createAppointmentDto: CreateAppointmentDto
+  ) {
+    const min = createAppointmentDto.min_appoinment_number, max = createAppointmentDto.max_appoinment_number;
+    if ( min > max) throw new BadRequestException("min_number must be less than max_number");
+    const unfreedDoctor = await this.doctorRepository
+      .createQueryBuilder("D")
+      .select([
+        "`D`.`user_id` as user_id",
+        "`D`.`user_name` as user_name",
+        "`D`.`phone` as phone",
+        "COUNT(A.id) as count"
+      ])
+      .leftJoin("D.appointments", "A")
+      .where("`A`.`date` = :date", {date: createAppointmentDto.date})
+      .andWhere("`A`.`queue_number` BETWEEN :min AND :max", {min: min, max: max})
+      .groupBy("`D`.`user_id`")
+      .having("COUNT(A.id) < :range", {range: max - min + 1})
+      .getRawMany();
+
+    const freeDoctor = await this.doctorRepository
+      .createQueryBuilder("D")
+      .select([
+        "D.user_id as user_id",
+        "D.user_name as user_name",
+        "D.email as email",
+      ])
+      .where("D.user_id NOT IN (SELECT D.user_id FROM appointments A WHERE A.doctorUserid = D.user_id AND A.date = :date)", {date: createAppointmentDto.date})
+      .orWhere("D.user_id IN (SELECT D.user_id FROM appointments A WHERE A.doctorUserid = D.user_id AND A.date = :date AND (A.queue_number NOT BETWEEN :min AND :max)) AND D.user_id NOT IN (SELECT D.user_id FROM appointments A WHERE A.doctorUserid = D.user_id AND A.date = :date AND (A.queue_number BETWEEN :min AND :max))", {date: createAppointmentDto.date, min: min, max: max})
+      .getRawMany()
+
+      return [...unfreedDoctor, ...freeDoctor];
   }
 }

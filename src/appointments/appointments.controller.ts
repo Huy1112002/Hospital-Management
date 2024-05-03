@@ -36,7 +36,6 @@ export class AppointmentsController {
   }
 
   @ApiBearerAuth()
-  @UserRoles(Role.Admin)
   @Get()
   findAll(
     @GetCurrentUserId() user_id: string, 
@@ -46,11 +45,12 @@ export class AppointmentsController {
     return this.examninationsService.findAll(user_id, role, src);
   }
 
-  @Get('/schedule')
-  getSchedule(
-    @Query('doctor_id') doctor_id: string,
+  @Public()
+  @Get('/freeDoctor')
+  getFreeDoctor(
+    @Query() createAppointmentDto: CreateAppointmentDto,
   ) {
-    return this.examninationsService.getSchedule(doctor_id);
+    return this.examninationsService.findFreeDoctor(createAppointmentDto);
   }
 
   @ApiBearerAuth()

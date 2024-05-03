@@ -1,13 +1,19 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
-import { IsDate, IsEmail, IsNotEmpty, IsOptional, IsString, IsUUID, Length, MaxLength } from 'class-validator';
-import { randomBytes } from 'crypto';
-import { Role } from 'src/common/enums/role.enum';
+import { ApiProperty } from "@nestjs/swagger";
+import { Transform } from "class-transformer";
+import { IsDate, IsEmail, IsInt, IsNotEmpty, IsOptional, IsString, IsUUID, Length, Max, MaxLength, Min } from "class-validator";
+import { randomBytes } from "crypto";
+import { Role } from "src/common/enums/role.enum";
 
 export class CreateFirstAppointment {
     @ApiProperty()
     @IsString()
     date: string;
+
+    @ApiProperty()
+    @IsInt()
+    @Min(1)
+    @Max(10)
+    appoinment_number: number;
 
     @ApiProperty()
     @IsEmail()

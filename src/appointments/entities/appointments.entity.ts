@@ -32,6 +32,9 @@ export class Appointment {
     @Column()
     date: string;
 
+    @Column()
+    queue_number: number;
+
     @Column({nullable: true})
     medicineList: string;
 

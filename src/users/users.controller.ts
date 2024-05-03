@@ -50,4 +50,13 @@ export class UsersController {
     getAllDoctor() {
         return this.usersService.getAllDoctor();
     }
+
+    @ApiBearerAuth()
+    @Patch('/:id')
+    update(
+      @Param('id') user_id: string,
+      @Body() updateUserDto: UpdateUserDto,
+    ) {
+      return this.update(user_id, updateUserDto)
+    }
 }

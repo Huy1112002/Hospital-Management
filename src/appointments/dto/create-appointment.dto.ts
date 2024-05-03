@@ -1,10 +1,12 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Transform, Type } from "class-transformer";
-import { IsDate, IsInt, IsOptional, IsString, IsUUID, Max, Min } from "class-validator";
+import { IsDate, IsInt, IsOptional, IsString, IsUUID, Max, Min, Validate } from "class-validator";
+import { DateValidator } from "src/common/decorators/date.validator";
 
 export class CreateAppointmentDto {
     @ApiProperty()
     @IsString()
+    @Validate(DateValidator)
     date: string;
 
     @ApiProperty()

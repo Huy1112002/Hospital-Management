@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -13,9 +13,10 @@ import { User } from 'src/users/entities/user.entity';
 import { Patient } from 'src/users/entities/patient.entity';
 import { Doctor } from 'src/users/entities/doctor.entity';
 import { MedicineService } from 'src/medicine/medicine.service';
-import { NotEquals } from 'class-validator';
-import { elementAt } from 'rxjs';
 import { randomInt } from 'crypto';
+import { ROLES_KEY } from 'src/common/decorators/roles.decorator';
+
+const moment = require('moment');
 
 @Injectable()
 export class AppointmentsService {
@@ -35,6 +36,14 @@ export class AppointmentsService {
     doctor_id: string, 
     createExamninationDto: CreateAppointmentDto
   ): Promise<any> {
+    
+    const date: Date = moment(createExamninationDto.date, 'DD-MM-YYYY').toDate()
+    const now: Date = new Date();
+    if(date < now) throw new BadRequestException('Register date is in past!');
+
+    now.setDate(now.getDate() + 30);
+    if(date > now) throw new BadRequestException('You can only register in 30 days before!')
+    
     const checkExits: boolean = await this.examinationRepository.exists({
       where:
         {
@@ -48,7 +57,6 @@ export class AppointmentsService {
     const nurseList = await this.userService.getAllNurse();
     const nurse = getRandomElement(nurseList)
 
-    const appointment_number: number = createExamninationDto.min_appoinment_number + randomInt(createExamninationDto.max_appoinment_number - createExamninationDto.min_appoinment_number);
     for(let i = createExamninationDto.min_appoinment_number; i <= createExamninationDto.max_appoinment_number; i++) {
       const checkValid: boolean = await this.examinationRepository.exists({
         where: {
@@ -64,7 +72,7 @@ export class AppointmentsService {
       return await this.examinationRepository
       .save({
         date: createExamninationDto.date,
-        queue_number: appointment_number,
+        queue_number: i,
         doctor: { user_id: doctor_id},
         patient: { user_id: patient_id },
         nurse: {user_id: nurse.user_id},
@@ -238,7 +246,26 @@ export class AppointmentsService {
     }
   }
 
-  cancle(id: string) {
+  async cancle(id: string, user_id: string, user_role: Role) {
+    const appointment = await this.examinationRepository.findOne({
+      relations: {
+        patient: true,
+        doctor: true,
+      },
+      where: {
+        id: id
+      }
+    });
+    if(appointment.status != AppointmentStatus.CREATED) throw new BadRequestException("This appointment is not in created status");
+    switch (user_role) {
+      case (Role.Patient): 
+        if (appointment.patient.user_id != user_id) throw new ForbiddenException('Access denied');
+        break;
+
+      case (Role.Doctor):
+        if (appointment.doctor.user_id != user_id) throw new ForbiddenException('Access denied');
+    }
+
     return this.examinationRepository.update(id, {status: AppointmentStatus.CANCEL});
   }
 
@@ -247,6 +274,10 @@ export class AppointmentsService {
     appointment_id: string, 
     updateAppointmentDto: UpdateAppointmentDto
   ): Promise<any> {
+
+    const appointment = await this.examinationRepository.findOneBy({id: appointment_id});
+    if(appointment.status != AppointmentStatus.CREATED) throw new BadRequestException("This appointment is not in created status")
+
     try {
       const doctor = await this.userService.findOneById(doctor_id);
       if(!doctor) throw new NotFoundException("Doctor is not exits!"); 
@@ -256,7 +287,7 @@ export class AppointmentsService {
         delete updateAppointmentDto.medicinesList;
       }
 
-      const appointment = this.examinationRepository.update(
+      const appointment = await this.examinationRepository.update(
         {
           doctor: {user_id: doctor_id},
           id: appointment_id,
@@ -266,15 +297,16 @@ export class AppointmentsService {
           status: AppointmentStatus.DONE,
         })
 
-      const medicine = medicinesList.forEach(medicine => {
+      const medicine = medicinesList.map(async medicine => {
         try {
-          this.medicineService.useMedicine(medicine.medicine_id, medicine.amount)
+          return await this.medicineService.useMedicine(medicine.medicine_id, medicine.amount)
         } catch (err: any) {
           return err;
         }
       })
-
-      return appointment;
+      
+      const medicineLog = await Promise.all(medicine);
+      return {appointment, medicineLog};
     } catch (err: any) {
       return err;
     }

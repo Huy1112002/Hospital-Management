@@ -82,8 +82,8 @@ export class UsersService {
         });
     }
 
-    async update(id: string, updateUserDto: UpdateUserDto): Promise<void> {
-        await this.usersRepository.update(id, updateUserDto);
+    async update(id: string, updateUserDto: UpdateUserDto) {
+        return await this.usersRepository.update(id, updateUserDto);
     }
 
     async updateRtHash(id: string, hasedRt: string) {

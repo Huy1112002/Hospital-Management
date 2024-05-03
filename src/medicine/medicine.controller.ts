@@ -12,7 +12,7 @@ export class MedicineController {
     constructor(private readonly medicineService: MedicineService) {}
 
     // ### Controller for batch
-    @UserRoles(Role.Admin, Role.Doctor, Role.Nurse)
+    @UserRoles(Role.Admin)
     @ApiBearerAuth()
     @HttpCode(HttpStatus.CREATED)
     @Post('batch') // create new batch
@@ -41,7 +41,8 @@ export class MedicineController {
         return this.medicineService.getBatch(id);
     }
 
-    @UserRoles(Role.Admin, Role.Doctor, Role.Nurse)
+    // ### Controller for medicine
+    @UserRoles(Role.Admin)
     @ApiBearerAuth()
     @HttpCode(HttpStatus.CREATED)
     @Post() // create new medicine

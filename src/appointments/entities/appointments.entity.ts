@@ -1,32 +1,32 @@
-import { Doctor } from "src/users/entities/doctor.entity";
-import { Nurse } from "src/users/entities/nurse.entity";
-import { Patient } from "src/users/entities/patient.entity";
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Doctor } from 'src/users/entities/doctor.entity';
+import { Nurse } from 'src/users/entities/nurse.entity';
+import { Patient } from 'src/users/entities/patient.entity';
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
 export enum AppointmentStatus {
-    CREATED='created',
-    DONE='done',
-    CANCEL='cancel',
+    CREATED = 'created',
+    DONE = 'done',
+    CANCEL = 'cancel',
 }
 
-@Entity({name: 'appointments'})
+@Entity({ name: 'appointments' })
 export class Appointment {
     @PrimaryGeneratedColumn()
     id: string;
 
-    @Column({nullable: true})
+    @Column({ nullable: true })
     disease: string;
 
-    @Column({nullable: true})
+    @Column({ nullable: true })
     level: string;
 
-    @Column({nullable: true})
+    @Column({ nullable: true })
     underlyingDisease: string;
 
-    @Column({nullable: true})
+    @Column({ nullable: true })
     description: string;
 
-    @Column({nullable: true})
+    @Column({ nullable: true })
     advice: string;
 
     @Column()
@@ -35,10 +35,10 @@ export class Appointment {
     @Column()
     queue_number: number;
 
-    @Column({nullable: true})
-    medicineList: string;
+    @Column({ type: 'json', nullable: true })
+    medicinesList: object;
 
-    @Column({type: 'enum', enum: AppointmentStatus, default: AppointmentStatus.CREATED})
+    @Column({ type: 'enum', enum: AppointmentStatus, default: AppointmentStatus.CREATED })
     status: AppointmentStatus;
 
     @ManyToOne(() => Doctor, (doctor) => doctor.appointments)
@@ -47,7 +47,7 @@ export class Appointment {
     @ManyToOne(() => Patient, (patient) => patient.appointments)
     patient: Patient;
 
-    @ManyToOne(() => Nurse, (nurse) => nurse.appointments, {nullable: true})
+    @ManyToOne(() => Nurse, (nurse) => nurse.appointments, { nullable: true })
     nurse: Nurse;
 
     @CreateDateColumn()

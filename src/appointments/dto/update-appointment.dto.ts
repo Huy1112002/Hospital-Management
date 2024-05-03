@@ -1,6 +1,16 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { CreateAppointmentDto } from './create-appointment.dto';
-import { IsArray, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+
+export class MedicineUse {
+    @ApiProperty()
+    @IsNotEmpty()
+    medicine_id: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    amount: number;
+}
 
 export class UpdateAppointmentDto {
     @ApiProperty()
@@ -21,18 +31,8 @@ export class UpdateAppointmentDto {
     @IsString()
     description: string;
 
-    @ApiProperty()
-    @IsOptional()
-    @IsString()
-    advice: string;
-
-    @ApiProperty()
+    @ApiProperty({ isArray: true, type: MedicineUse })
     @IsArray()
     @IsOptional()
     medicinesList: MedicineUse[];
-}
-
-export class MedicineUse {
-    medicine_id: string;
-    amount: number;
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -47,11 +47,11 @@ export class MedicineService {
         });
 
         if (!medicine) {
-            return { message: 'Medicine not found' };
+            throw new NotFoundException('Medicine not found');
         }
 
         if (medicine.remaining < amount) {
-            return { message: 'Not enough medicine' };
+            throw new ForbiddenException(`Not enough medicine ${medicine_id}`);
         }
 
         medicine.remaining -= amount;

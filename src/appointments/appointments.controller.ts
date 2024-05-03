@@ -14,74 +14,50 @@ import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('appointments')
 export class AppointmentsController {
-  constructor(private readonly examninationsService: AppointmentsService) {}
+    constructor(private readonly examninationsService: AppointmentsService) {}
 
-  @UserRoles(Role.Patient)
-  @ApiBearerAuth()
-  @Post()
-  create(
-    @GetCurrentUserId() user_id: string, 
-    @Query('doctor_id') doctor_id: string, 
-    @Body() createAppointmentDto: CreateAppointmentDto
-  ) {
-    return this.examninationsService.create(user_id, doctor_id, createAppointmentDto);
-  }
+    @UserRoles(Role.Patient)
+    @ApiBearerAuth()
+    @Post()
+    create(@GetCurrentUserId() user_id: string, @Query('doctor_id') doctor_id: string, @Body() createAppointmentDto: CreateAppointmentDto) {
+        return this.examninationsService.create(user_id, doctor_id, createAppointmentDto);
+    }
 
-  @Post('/first_register')
-  @Public()
-  createFirstRegister(
-    @Body() createFirstRegister: CreateFirstAppointment,
-  ) {
-    return this.examninationsService.createFirstTime(createFirstRegister);
-  }
+    @Post('/first_register')
+    @Public()
+    createFirstRegister(@Body() createFirstRegister: CreateFirstAppointment) {
+        return this.examninationsService.createFirstTime(createFirstRegister);
+    }
 
-  @ApiBearerAuth()
-  @Get()
-  findAll(
-    @GetCurrentUserId() user_id: string, 
-    @GetCurrentUser('role') role: Role, 
-    @Query('src') src: AppointmentStatus
-  ) {
-    return this.examninationsService.findAll(user_id, role, src);
-  }
+    @ApiBearerAuth()
+    @Get()
+    findAll(@GetCurrentUserId() user_id: string, @GetCurrentUser('role') role: Role, @Query('src') src: AppointmentStatus) {
+        return this.examninationsService.findAll(user_id, role, src);
+    }
 
-  @UserRoles(Role.Patient)
-  @Get('/freeDoctor')
-  getFreeDoctor(
-    @Query() createAppointmentDto: CreateAppointmentDto,
-  ) {
-    return this.examninationsService.findFreeDoctor(createAppointmentDto);
-  }
+    @UserRoles(Role.Patient)
+    @Get('/freeDoctor')
+    getFreeDoctor(@Query() createAppointmentDto: CreateAppointmentDto) {
+        return this.examninationsService.findFreeDoctor(createAppointmentDto);
+    }
 
-  @ApiBearerAuth()
-  @Get(':id')
-  findOne(
-    @GetCurrentUserId() user_id: string, 
-    @GetCurrentUser('role') role: Role,
-    @Param('id') id: string
-  ) {
-    return this.examninationsService.findOne(user_id, role, id);
-  }
+    @ApiBearerAuth()
+    @Get(':id')
+    findOne(@GetCurrentUserId() user_id: string, @GetCurrentUser('role') role: Role, @Param('id') id: string) {
+        return this.examninationsService.findOne(user_id, role, id);
+    }
 
-  @UserRoles(Role.Admin, Role.Doctor, Role.Patient)
-  @ApiBearerAuth()
-  @Patch(':id/cancle')
-  remove(
-    @Param('id') id: string,
-    @GetCurrentUserId() user_id: string,
-    @GetCurrentUser('role') user_role: Role,
-  ) {
-    return this.examninationsService.cancle(id, user_id, user_role);
-  }
+    @UserRoles(Role.Admin, Role.Doctor, Role.Patient)
+    @ApiBearerAuth()
+    @Patch(':id/cancel')
+    remove(@Param('id') id: string, @GetCurrentUserId() user_id: string, @GetCurrentUser('role') user_role: Role) {
+        return this.examninationsService.cancel(id, user_id, user_role);
+    }
 
-  @UserRoles(Role.Doctor)
-  @ApiBearerAuth()
-  @Patch(':id/done')
-  advice(
-    @GetCurrentUserId() user_id: string, 
-    @Param('id') id: string, 
-    @Body() updateAppointmentDto: UpdateAppointmentDto,
-  ) {
-    return this.examninationsService.update(user_id, id, updateAppointmentDto);
-  }
+    @UserRoles(Role.Doctor)
+    @ApiBearerAuth()
+    @Patch(':id/done')
+    advice(@GetCurrentUserId() user_id: string, @Param('id') id: string, @Body() updateAppointmentDto: UpdateAppointmentDto) {
+        return this.examninationsService.update(user_id, id, updateAppointmentDto);
+    }
 }

@@ -13,7 +13,7 @@ import { State } from '../common/enums/machine.enum';
 export class MachinesController {
     constructor(private readonly machinesService: MachinesService) {}
 
-    @UserRoles(Role.Admin, Role.Doctor, Role.Nurse)
+    @UserRoles(Role.Admin)
     @ApiBearerAuth()
     @Post()
     async create(@Body() createMachineDto: CreateMachineDto) {
@@ -48,7 +48,7 @@ export class MachinesController {
         return await this.machinesService.update(+id, updateMachineDto);
     }
 
-    @UserRoles(Role.Admin, Role.Doctor, Role.Nurse)
+    @UserRoles(Role.Admin)
     @ApiBearerAuth()
     @Delete(':id')
     async remove(@Param('id') id: string) {

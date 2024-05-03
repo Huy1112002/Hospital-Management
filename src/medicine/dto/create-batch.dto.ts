@@ -2,18 +2,23 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsArray, IsDate, Length, IsOptional } from 'class-validator';
 
 class Medicine {
+    @ApiProperty()
     @IsNotEmpty()
     medicine_id: string;
 
+    @ApiProperty()
     @IsNotEmpty()
     quantity: number;
 
+    @ApiProperty()
     @IsNotEmpty()
     cost_in: number;
 
+    @ApiProperty()
     @IsNotEmpty()
     expire: Date;
 
+    @ApiProperty()
     @IsNotEmpty()
     vendor: string;
 }
@@ -43,7 +48,7 @@ export class CreateBatchDto {
     @IsOptional()
     total_type: number = 0;
 
-    @ApiProperty({ isArray: true })
+    @ApiProperty({ isArray: true, type: Medicine })
     @IsNotEmpty()
     @IsArray()
     medicines: Medicine[];

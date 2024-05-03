@@ -10,48 +10,45 @@ import { User } from './entities/user.entity';
 
 @Controller('users')
 export class UsersController {
-    constructor(private readonly usersService: UsersService) { }
+    constructor(private readonly usersService: UsersService) {}
 
     @UserRoles(Role.Admin)
     @ApiBearerAuth()
     @Post()
     create(@Body() createUserDto: CreateUserDto) {
-      return this.usersService.createUser(createUserDto);
+        return this.usersService.createUser(createUserDto);
     }
 
     @UserRoles(Role.Admin)
     @ApiBearerAuth()
     @Get()
     findAll() {
-      return this.usersService.findAll();
+        return this.usersService.findAll();
     }
 
     @ApiBearerAuth()
     @Get('profile')
     getProfile(@GetCurrentUserId() id: string) {
-      try {
-        this.usersService.findOneById(id);
-      } catch (err: unknown) {
-        throw err;
-      }
+        try {
+            return this.usersService.findOneById(id);
+        } catch (err: unknown) {
+            throw err;
+        }
     }
 
     @UserRoles(Role.Admin)
     @ApiBearerAuth()
     @Get('search')
-    search(
-      @Query('query') query: string,
-      @Query('role') role: Role
-    ) {
-      var search = this.usersService.queryUser(query, role);
-      return search;
+    search(@Query('query') query: string, @Query('role') role: Role) {
+        var search = this.usersService.queryUser(query, role);
+        return search;
     }
 
     @UserRoles(Role.Patient)
     @ApiBearerAuth()
     @Get('doctor')
     getAllDoctor() {
-      return this.usersService.getAllDoctor();
+        return this.usersService.getAllDoctor();
     }
 
     @ApiBearerAuth()

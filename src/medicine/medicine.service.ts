@@ -191,10 +191,12 @@ export class MedicineService {
     }
 
     async getBatch(id: string) {
-        return await this.batchDetailRepo.findOne({
+        const batch = await this.batchDetailRepo.findOne({
             where: { id },
             relations: ['batchMedicines'],
         });
+
+        return batch ? batch : { message: 'Batch not found' };
     }
 
     async getLogsByBatchId(id: string) {

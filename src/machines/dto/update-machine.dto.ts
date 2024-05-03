@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional } from 'class-validator';
+import { IsEnum, IsOptional } from 'class-validator';
+import { State } from '../../common/enums/machine.enum';
 
 export class UpdateMachineDto {
     @ApiProperty()
@@ -12,7 +13,8 @@ export class UpdateMachineDto {
 
     @ApiProperty()
     @IsOptional()
-    status: string;
+    @IsEnum(State)
+    status: State;
 
     @ApiProperty()
     @IsOptional()

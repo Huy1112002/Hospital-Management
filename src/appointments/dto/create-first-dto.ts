@@ -35,6 +35,10 @@ export class CreateFirstAppointment {
 
     role: Role = Role.Patient;
     password: string = randomBytes(4).toString('hex');
-    date_of_birth: Date;
+
+    @IsOptional()
     isMale: boolean;
+
+    @IsOptional()
+    date_of_birth: Date;
 }

@@ -12,12 +12,19 @@ export class UpdateAppointmentDto {
     level: string;
 
     @ApiProperty()
+    @IsOptional()
     @IsString()
     underlyingDisease: string;
 
     @ApiProperty()
+    @IsOptional()
     @IsString()
     description: string;
+
+    @ApiProperty()
+    @IsOptional()
+    @IsString()
+    advice: string;
 
     @ApiProperty()
     @IsArray()

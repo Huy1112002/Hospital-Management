@@ -13,6 +13,7 @@ import { UsersModule } from './users/users.module';
 import { AppointmentsModule } from './appointments/appointments.module';
 import { MachinesModule } from './machines/machines.module';
 import { MedicineModule } from './medicine/medicine.module';
+import { MomentModule } from '@ccmos/nestjs-moment';
 
 @Module({
     imports: [
@@ -28,6 +29,9 @@ import { MedicineModule } from './medicine/medicine.module';
             useFactory: (configService: ConfigService) => ({
                 ...configService.get('database'),
             }),
+        }),
+        MomentModule.forRoot({
+            tz: 'Asia/Taipei',
         }),
         AuthModule,
         UsersModule,

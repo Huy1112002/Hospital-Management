@@ -45,7 +45,7 @@ export class AppointmentsController {
     return this.examninationsService.findAll(user_id, role, src);
   }
 
-  @Public()
+  @UserRoles(Role.Patient)
   @Get('/freeDoctor')
   getFreeDoctor(
     @Query() createAppointmentDto: CreateAppointmentDto,
@@ -63,13 +63,15 @@ export class AppointmentsController {
     return this.examninationsService.findOne(user_id, role, id);
   }
 
-  @UserRoles(Role.Admin)
+  @UserRoles(Role.Admin, Role.Doctor, Role.Patient)
   @ApiBearerAuth()
   @Patch(':id/cancle')
   remove(
-    @Param('id') id: string
+    @Param('id') id: string,
+    @GetCurrentUserId() user_id: string,
+    @GetCurrentUser('role') user_role: Role,
   ) {
-    return this.examninationsService.cancle(id);
+    return this.examninationsService.cancle(id, user_id, user_role);
   }
 
   @UserRoles(Role.Doctor)

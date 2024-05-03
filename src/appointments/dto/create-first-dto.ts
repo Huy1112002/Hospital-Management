@@ -1,12 +1,15 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Transform } from "class-transformer";
-import { IsDate, IsEmail, IsInt, IsNotEmpty, IsOptional, IsString, IsUUID, Length, Max, MaxLength, Min } from "class-validator";
+import { IsDate, IsEmail, IsInt, IsNotEmpty, IsOptional, IsString, IsUUID, Length, Max, MaxLength, Min, Validate } from "class-validator";
 import { randomBytes } from "crypto";
+import { DateValidator } from "src/common/decorators/date.validator";
 import { Role } from "src/common/enums/role.enum";
 
 export class CreateFirstAppointment {
     @ApiProperty()
     @IsString()
+    @IsString()
+    @Validate(DateValidator)
     date: string;
 
     @ApiProperty()

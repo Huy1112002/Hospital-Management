@@ -53,10 +53,7 @@ export class UsersController {
 
     @ApiBearerAuth()
     @Patch('/:id')
-    update(
-      @Param('id') user_id: string,
-      @Body() updateUserDto: UpdateUserDto,
-    ) {
-      return this.update(user_id, updateUserDto)
+    update(@Param('id') user_id: string, @Body() updateUserDto: UpdateUserDto) {
+        return this.usersService.update(user_id, updateUserDto);
     }
 }

@@ -15,7 +15,7 @@ export class CreateAppointmentDto {
     @Min(1)
     @Max(10)
     @IsInt()
-    min_appoinment_number: number;
+    min_appointment_number: number;
 
     @ApiProperty()
     @IsOptional()
@@ -23,5 +23,5 @@ export class CreateAppointmentDto {
     @IsInt()
     @Min(1)
     @Max(10)
-    max_appoinment_number: number;
+    max_appointment_number: number;
 }

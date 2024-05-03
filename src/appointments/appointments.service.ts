@@ -49,7 +49,7 @@ export class AppointmentsService {
         {
           patient: {user_id: patient_id},
           date: createExamninationDto.date,
-          queue_number: Between(createExamninationDto.min_appoinment_number, createExamninationDto.max_appoinment_number),
+          queue_number: Between(createExamninationDto.min_appointment_number, createExamninationDto.max_appointment_number),
         }
     });
     if(checkExits) return new BadRequestException('Examinations is exits in this time!');
@@ -57,7 +57,7 @@ export class AppointmentsService {
     const nurseList = await this.userService.getAllNurse();
     const nurse = getRandomElement(nurseList)
 
-    for(let i = createExamninationDto.min_appoinment_number; i <= createExamninationDto.max_appoinment_number; i++) {
+    for(let i = createExamninationDto.min_appointment_number; i <= createExamninationDto.max_appointment_number; i++) {
       const checkValid: boolean = await this.examinationRepository.exists({
         where: {
           patient: {user_id: patient_id},
@@ -335,7 +335,7 @@ export class AppointmentsService {
   async findFreeDoctor (
     createAppointmentDto: CreateAppointmentDto
   ) {
-    const min = createAppointmentDto.min_appoinment_number, max = createAppointmentDto.max_appoinment_number;
+    const min = createAppointmentDto.min_appointment_number, max = createAppointmentDto.max_appointment_number;
     if ( min > max) throw new BadRequestException("min_number must be less than max_number");
     const unfreedDoctor = await this.doctorRepository
       .createQueryBuilder("D")

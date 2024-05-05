@@ -35,6 +35,5 @@ export class CreateUserDto {
     isMale: boolean;
 
     @IsOptional()
-    @IsDate()
     date_of_birth: Date;
 }
